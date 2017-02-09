@@ -12,18 +12,16 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 #
-from workspaceclient.common import utils
 from workspaceclient.common.i18n import _
 
 
 class DesktopParser(object):
-
     @staticmethod
     def add_desktop_id_arg(parser, op):
         parser.add_argument(
             "desktop_id",
-            metavar="<desktop-id>",
-            help=_("Desktop to %s" % op)
+            metavar="<desktop>",
+            help=_("Desktop to %s (desktop-id or computer-name)" % op)
         )
 
     @staticmethod
@@ -69,10 +67,11 @@ class DesktopParser(object):
         )
 
     @staticmethod
-    def add_computer_name_option(parser):
+    def add_computer_name_option(parser, required=False):
         parser.add_argument(
             "--computer-name",
             metavar="<computer-name>",
+            required=required,
             help=_("list desktop with the computer name")
         )
 
@@ -82,4 +81,14 @@ class DesktopParser(object):
             "--marker",
             metavar="<desktop-id>",
             help=_("The last desktop ID of the previous page")
+        )
+
+    @staticmethod
+    def add_edit_computer_name_option(parser, required=True):
+        parser.add_argument(
+            "--computer-name",
+            metavar="<computer-name>",
+            required=required,
+            help=_("Change computer name to (must be unique, "
+                   "[a-zA-Z0-9-_] allowed, start with [a-zA-Z])")
         )

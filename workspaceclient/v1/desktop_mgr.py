@@ -12,8 +12,12 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 #
+from osc_lib import exceptions
+
+from workspaceclient.common import exceptions as execs
 from workspaceclient.common import manager
 from workspaceclient.common import utils
+from workspaceclient.common.i18n import _
 from workspaceclient.v1 import resource
 
 
@@ -22,8 +26,27 @@ class DesktopManager(manager.Manager):
 
     resource_class = resource.Desktop
 
+    def find(self, keyword):
+        """find desktop by keyword (id only for now)"""
+        try:
+            # try keyword as UUID
+            return self.get(keyword)
+        except exceptions.ClientException as e:
+            pass
+
+        results = self.list_detail(computer_name=keyword)
+        matched_number = len(results)
+        if matched_number > 1:
+            raise execs.NotUniqueMatch
+        elif matched_number == 1:
+            return results[0]
+
+        message = _("No Desktop with ID or compute name of "
+                    "'%s' exists.") % keyword
+        raise exceptions.NotFound(message)
+
     def create(self, desktop_id):
-        """delete desktop"""
+        """create desktop"""
         # TODO (Woo)
 
     def delete(self, desktop_id):

@@ -12,10 +12,10 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 #
-from workspaceclient.tests import fakes
-from workspaceclient.v1 import antiddos_mgr
-from mock import mock
+import mock
 from osc_lib.tests import utils
+
+from workspaceclient.tests import fakes
 
 
 class BaseTestCase(utils.TestCommand):
@@ -23,16 +23,17 @@ class BaseTestCase(utils.TestCommand):
     pass
 
 
-class AntiDDosV1BaseTestCase(BaseTestCase):
-    """Base test case class for AntiDDos V1 management API."""
+class WorkspaceV1BaseTestCase(BaseTestCase):
+    """Base test case class for Workspace V1 management API."""
 
     def __init__(self, *args, **kwargs):
-        super(AntiDDosV1BaseTestCase, self).__init__(*args, **kwargs)
+        super(WorkspaceV1BaseTestCase, self).__init__(*args, **kwargs)
         self.cmd = None
-        self._antiddos = None
-        self.mocked_find = None
 
     def setUp(self):
-        super(AntiDDosV1BaseTestCase, self).setUp()
-        fake_antiddos_client = fakes.FakeAntiDDosV1Client()
-        self.app.client_manager.antiddos = fake_antiddos_client
+        super(WorkspaceV1BaseTestCase, self).setUp()
+        fake_workspace_client = fakes.FakeWorkspaceV1Client()
+        self.app.client_manager.workspace = fake_workspace_client
+        self.app.client_manager.compute = mock.Mock(
+            security_gourps=mock.Mock()
+        )

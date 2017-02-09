@@ -21,10 +21,11 @@ from workspaceclient.common import display
 from workspaceclient.common import manager
 from workspaceclient.common import resource as r
 from workspaceclient.common import utils
-from workspaceclient.v1 import antiddos_mgr
 
 
 # fake request id
+from workspaceclient.v1 import desktop_mgr
+
 FAKE_REQUEST_ID = 'req-0594c66b-6973-405c-ae2c-43fcfc00f2e3'
 
 # fake resource id
@@ -116,8 +117,8 @@ class FakeHTTPResponse(object):
         return jsonutils.loads(self.content)
 
 
-class FakeAntiDDosV1Client(object):
+class FakeWorkspaceV1Client(object):
 
     def __init__(self, **kwargs):
         self.fake_http_client = mock.Mock()
-        self.antiddos = antiddos_mgr.AntiDDosManager(self.fake_http_client)
+        self.desktop = desktop_mgr.DesktopManager(self.fake_http_client)

@@ -14,6 +14,7 @@
 #
 import logging
 
+from osc_lib import utils
 from osc_lib.command import command
 from workspaceclient.common import parser_builder as p
 from workspaceclient.common.i18n import _
@@ -83,7 +84,8 @@ class RebootDesktop(command.Command):
 
     def take_action(self, args):
         client = self.app.client_manager.workspace
-        client.desktop.reboot(args.desktop_id, args.force)
+        desktop = client.desktop.find(args.desktop_id)
+        client.desktop.reboot(desktop.desktop_id, args.force)
         return "done"
 
 
@@ -105,13 +107,14 @@ class StartDesktop(command.Command):
     _description = _("Start desktop")
 
     def get_parser(self, prog_name):
-        parser = super(RebootDesktop, self).get_parser(prog_name)
+        parser = super(StartDesktop, self).get_parser(prog_name)
         pb.DesktopParser.add_desktop_id_arg(parser, 'start')
         return parser
 
     def take_action(self, args):
         client = self.app.client_manager.workspace
-        client.desktop.start(args.desktop_id)
+        desktop = client.desktop.find(args.desktop_id)
+        client.desktop.start(desktop.desktop_id)
         return "done"
 
 
@@ -125,7 +128,8 @@ class StopDesktop(command.Command):
 
     def take_action(self, args):
         client = self.app.client_manager.workspace
-        client.desktop.stop(args.desktop_id)
+        desktop = client.desktop.find(args.desktop_id)
+        client.desktop.stop(desktop.desktop_id)
         return "done"
 
 
@@ -139,21 +143,25 @@ class DeleteDesktop(command.Command):
 
     def take_action(self, args):
         client = self.app.client_manager.workspace
-        client.desktop.delete(args.desktop_id)
+        desktop = client.desktop.find(args.desktop_id)
+        client.desktop.delete(desktop.desktop_id)
         return "done"
 
 
 class EditDesktop(command.Command):
+    # TODO (woo) 404
     _description = _("Edit desktop meta properties")
 
     def get_parser(self, prog_name):
         parser = super(EditDesktop, self).get_parser(prog_name)
         pb.DesktopParser.add_desktop_id_arg(parser, 'edit')
-        pb.DesktopParser.add_hard_or_soft_arg(parser)
+        pb.DesktopParser.add_edit_computer_name_option(parser, True)
         return parser
 
     def take_action(self, args):
         client = self.app.client_manager.workspace
+        desktop = client.desktop.find(args.desktop_id)
+        client.desktop.edit(desktop.desktop_id, args.computer_name)
         return args
 
 
@@ -163,9 +171,17 @@ class ShowDesktop(command.ShowOne):
     def get_parser(self, prog_name):
         parser = super(ShowDesktop, self).get_parser(prog_name)
         pb.DesktopParser.add_desktop_id_arg(parser, 'show')
-        pb.DesktopParser.add_hard_or_soft_arg(parser)
         return parser
 
     def take_action(self, args):
+        compute = self.app.client_manager.compute
         client = self.app.client_manager.workspace
-        return args
+        desktop = client.desktop.find(args.desktop_id)
+        # replace security groups
+        sg_list = [utils.find_resource(compute.security_groups, sg['id']).name
+                   for sg in desktop.security_groups]
+        desktop.security_groups = sg_list
+
+        columns = resource.Desktop.show_column_names
+        formatter = resource.Desktop.formatter
+        return columns, desktop.get_display_data(columns, formatter=formatter)

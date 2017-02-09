@@ -22,7 +22,8 @@ from workspaceclient.osc import plugin
 from workspaceclient.tests import base
 
 
-class TestAntiDDosPlugin(base.BaseTestCase):
+class TestWorkspacePlugin(base.BaseTestCase):
+
     @mock.patch('workspaceclient.v1.client.Client')
     def test_make_client_with_session(self, client):
         instance = mock.Mock()
@@ -31,7 +32,7 @@ class TestAntiDDosPlugin(base.BaseTestCase):
         instance._cli_options = mock.Mock()
         instance._cli_options.config = mock.Mock()
         instance._cli_options.config.get.return_value = (
-            "http://antiddos.endpoint"
+            "http://workspace.endpoint"
         )
         instance.region_name = fakes.REGION_NAME
         instance.interface = fakes.INTERFACE
@@ -44,7 +45,7 @@ class TestAntiDDosPlugin(base.BaseTestCase):
 
         client.assert_called_once_with(
             instance.session,
-            "http://antiddos.endpoint",
+            "http://workspace.endpoint",
             region_name=fakes.REGION_NAME,
             interface=fakes.INTERFACE,
         )
@@ -53,10 +54,10 @@ class TestAntiDDosPlugin(base.BaseTestCase):
         parser = argparse.ArgumentParser(description='TestUnit')
         plugin.build_option_parser(parser)
 
-        parsed = parser.parse_args(['--os-antiddos-api-version',
+        parsed = parser.parse_args(['--os-workspace-api-version',
                                     '1',
-                                    '--os-antiddos-endpoint-override',
-                                    'http://antiddos.endpoint'])
-        self.assertEqual(parsed.os_antiddos_api_version, "1")
-        self.assertEqual(parsed.os_antiddos_endpoint_override,
-                         'http://antiddos.endpoint')
+                                    '--os-workspace-endpoint-override',
+                                    'http://workspace.endpoint'])
+        self.assertEqual(parsed.os_workspace_api_version, "1")
+        self.assertEqual(parsed.os_workspace_endpoint_override,
+                         'http://workspace.endpoint')
