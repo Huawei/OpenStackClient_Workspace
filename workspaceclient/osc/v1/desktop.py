@@ -28,7 +28,7 @@ class ListDesktop(command.Lister):
 
     def get_parser(self, prog_name):
         parser = super(ListDesktop, self).get_parser(prog_name)
-        pb.DesktopParser.add_status_arg(parser)
+        pb.DesktopParser.add_status_option(parser)
         pb.DesktopParser.add_desktop_ip_option(parser)
         pb.DesktopParser.add_user_name_option(parser)
         pb.DesktopParser.add_computer_name_option(parser)
@@ -51,7 +51,7 @@ class ListDesktopDetail(command.Lister):
 
     def get_parser(self, prog_name):
         parser = super(ListDesktopDetail, self).get_parser(prog_name)
-        pb.DesktopParser.add_status_arg(parser)
+        pb.DesktopParser.add_status_option(parser)
         pb.DesktopParser.add_desktop_ip_option(parser)
         pb.DesktopParser.add_user_name_option(parser)
         pb.DesktopParser.add_computer_name_option(parser)
