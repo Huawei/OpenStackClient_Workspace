@@ -42,7 +42,7 @@ class DesktopManager(manager.Manager):
                 "type": "HARD" if force_reboot else "SOFT"
             }
         }
-        return self._create("/desktops/" + desktop_id, json=json)
+        return self._create("/desktops/%s/action" % desktop_id, json=json)
 
     def start(self, desktop_id):
         """start desktop"""
@@ -59,7 +59,7 @@ class DesktopManager(manager.Manager):
         return self._create("/desktops/%s/action" % desktop_id, json=json)
 
     def list(self, ip=None, status=None, user_name=None, computer_name=None,
-             limit=None, marker=None):
+             marker=None, limit=None):
         params = utils.remove_empty_from_dict({
             "desktop_ip": ip,
             "status": status,
@@ -74,8 +74,9 @@ class DesktopManager(manager.Manager):
         """get desktop details"""
         return self._get("/desktops/" + desktop_id, key="desktop")
 
-    def list_details(self, ip=None, status=None, user_name=None,
-                     computer_name=None, limit=None, marker=None):
+    def list_detail(self, ip=None, status=None, user_name=None,
+                    computer_name=None, marker=None, limit=None):
+        """list desktops with detail"""
         params = utils.remove_empty_from_dict({
             "desktop_ip": ip,
             "status": status,

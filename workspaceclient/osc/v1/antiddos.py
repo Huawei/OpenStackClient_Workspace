@@ -16,7 +16,7 @@ import logging
 
 from osc_lib.command import command
 
-from workspaceclient.common import parser as p
+from workspaceclient.common import parser_builder as p
 from workspaceclient.common.i18n import _
 from workspaceclient.osc.v1 import parser_builder as pb
 from workspaceclient.v1 import resource

@@ -17,63 +17,69 @@ from workspaceclient.common.i18n import _
 
 
 class DesktopParser(object):
+
     @staticmethod
-    def add_floating_ip_arg(parser):
+    def add_desktop_id_arg(parser, op):
         parser.add_argument(
-            'floating_ip',
-            metavar='<floating ip>',
-            help=_("For floating ip (UUID or IP)")
+            "desktop_id",
+            metavar="<desktop-id>",
+            help=_("Desktop to %s" % op)
         )
 
     @staticmethod
-    def add_enable_l7_arg(parser):
-        enable_group = parser.add_mutually_exclusive_group()
-        enable_group.add_argument(
-            '--enable-l7',
+    def add_hard_or_soft_arg(parser, required=True):
+        force_reboot = parser.add_mutually_exclusive_group(required=required)
+        force_reboot.add_argument(
+            '--hard',
             action="store_true",
-            dest='enable_l7',
-            default=True,
-            help=_("enable L7 protection (default)")
+            dest='force',
+            default=False,
+            help=_("hard reboot")
         )
-        enable_group.add_argument(
-            '--disable-l7',
+        force_reboot.add_argument(
+            '--soft',
             action="store_false",
-            dest='enable_l7',
-            help=_("disable L7 protection")
+            dest='force',
+            default=False,
+            help=_("soft reboot")
         )
 
     @staticmethod
-    def add_traffic_pos_arg(parser):
+    def add_status_option(parser):
         parser.add_argument(
-            '--traffic-pos',
-            required=True,
-            choices=utils.str_range(1, 10),
-            help=_("traffic pos, integer between 1-9")
+            "--status",
+            choices=["ACTIVE", "SHUTOFF", "ERROR"],
+            help=_("list desktop with status")
         )
 
     @staticmethod
-    def add_http_request_pos_arg(parser):
+    def add_desktop_ip_option(parser):
         parser.add_argument(
-            '--http-request-pos',
-            required=True,
-            choices=utils.str_range(1, 16),
-            help=_("http request pos, integer between 1-15")
+            "--desktop-ip",
+            metavar="<desktop-ip>",
+            help=_("list desktop with the ip")
         )
 
     @staticmethod
-    def add_cleaning_access_pos_arg(parser):
+    def add_user_name_option(parser):
         parser.add_argument(
-            '--cleaning-access-pos',
-            required=True,
-            choices=utils.str_range(1, 9),
-            help=_("cleaning access pos, integer between 1-8")
+            "--user-name",
+            metavar="<user-name>",
+            help=_("list desktop with the user name")
         )
 
     @staticmethod
-    def add_app_type_arg(parser):
+    def add_computer_name_option(parser):
         parser.add_argument(
-            '--app-type',
-            required=True,
-            choices=('0', '1'),
-            help=_("app type, 0 or 1")
+            "--computer-name",
+            metavar="<computer-name>",
+            help=_("list desktop with the computer name")
+        )
+
+    @staticmethod
+    def add_marker_option(parser):
+        parser.add_argument(
+            "--marker",
+            metavar="<desktop-id>",
+            help=_("The last desktop ID of the previous page")
         )

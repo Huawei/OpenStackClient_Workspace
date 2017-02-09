@@ -19,3 +19,23 @@ from workspaceclient.common import resource
 class Desktop(resource.Resource, display.Display):
     """workspace desktop resource instance"""
 
+    show_column_names = [
+
+    ]
+
+    list_column_names = [
+        "Desktop Id",
+        "Computer Name",
+        "User Name",
+        "Ip Address",
+        "Created"
+    ]
+
+    list_detail_column_names = [
+        "Desktop Id",
+        "Computer Name",
+        "User Name",
+        "Product Id",
+        "Login Status",
+        "Status"
+    ]

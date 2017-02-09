@@ -15,7 +15,7 @@ import logging
 
 from osc_lib import utils
 
-from workspaceclient.common.parser import BaseParser
+from workspaceclient.common.parser_builder import BaseParser
 
 LOGGER = logging.getLogger(__name__)
 
