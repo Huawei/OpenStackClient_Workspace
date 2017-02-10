@@ -13,6 +13,7 @@
 #   under the License.
 #
 from osc_lib import utils
+
 from workspaceclient.common import display
 from workspaceclient.common import resource
 
@@ -21,11 +22,6 @@ class Desktop(resource.Resource, display.Display):
     """workspace desktop resource instance"""
 
     {
-        "security_groups": [
-            {
-                "id": "d3b0ce38-ef18-4997-9180-4f7eaa950ac7"
-            }
-        ],
         "flavor": {
             "id": "g1.2xlarge",
             "links": [
@@ -76,7 +72,13 @@ class Desktop(resource.Resource, display.Display):
             "type": "SATA",
             "size": 80
         },
-        "data_volumes": []
+        "data_volumes": [{
+            "type": "SATA",
+            "size": 80
+        }, {
+            "type": "SSD",
+            "size": 80
+        }]
     }
 
     show_column_names = [
@@ -85,13 +87,21 @@ class Desktop(resource.Resource, display.Display):
         "User Name",
         "Product Id",
         "Security Groups",
+        "Flavor",
+        "metadata",
+        "addresses",
         "Created",
         "Login Status",
         "Status"
     ]
 
     formatter = {
-        "Security Groups": utils.format_list
+        "Security Groups": utils.format_list,
+        "Flavor": lambda flavor: flavor['id'],
+        "metadata": utils.format_dict,
+        "Root Volume": utils.format_dict,
+        "Data Volumes": utils.format_list_of_dicts,
+        "addresses": utils.format_list_of_dicts,
     }
 
     list_column_names = [

@@ -14,6 +14,8 @@
 #
 import logging
 
+import itertools
+import six
 from osc_lib import utils
 from osc_lib.command import command
 from workspaceclient.common import parser_builder as p
@@ -177,10 +179,17 @@ class ShowDesktop(command.ShowOne):
         compute = self.app.client_manager.compute
         client = self.app.client_manager.workspace
         desktop = client.desktop.find(args.desktop_id)
+
         # replace security groups
-        sg_list = [utils.find_resource(compute.security_groups, sg['id']).name
-                   for sg in desktop.security_groups]
-        desktop.security_groups = sg_list
+        # sg_list = [utils.find_resource(compute.security_groups, sg['id']).name
+        #            for sg in desktop.security_groups]
+        # desktop.security_groups = sg_list
+        desktop.security_groups = [sg['id'] for sg in desktop.security_groups]
+
+        addresses = []
+        for address in six.itervalues(desktop.addresses):
+            addresses += address
+        desktop.addresses = addresses
 
         columns = resource.Desktop.show_column_names
         formatter = resource.Desktop.formatter

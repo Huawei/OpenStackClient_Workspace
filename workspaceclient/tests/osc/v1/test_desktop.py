@@ -196,7 +196,6 @@ class TestDesktopShow(TestDesktop):
             'workspace.c2.large.windows', 'sg01, sg02',
             '2016-11-14T14:41:25.000Z', 'REGISTERED', 'ACTIVE'
         )
-
         self.assertEqual(data, expect_data)
 
 
