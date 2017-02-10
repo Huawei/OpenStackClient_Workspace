@@ -90,6 +90,8 @@ class Desktop(resource.Resource, display.Display):
         "Flavor",
         "metadata",
         "addresses",
+        "Root Volume",
+        "Data Volumes",
         "Created",
         "Login Status",
         "Status"
