@@ -12,7 +12,7 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 #
-from osc_lib import exceptions
+from keystoneauth1 import exceptions
 
 from workspaceclient.common import exceptions as execs
 from workspaceclient.common import manager

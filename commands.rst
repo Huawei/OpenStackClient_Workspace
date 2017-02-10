@@ -43,3 +43,8 @@ Commands
 
     $ openstack desktop delete 393d8766-ee7b-48ee-9413-c818339a39ba
     done
+
+#. --desktop show(查看桌面详情)::
+
+    $ openstack desktop show 393d8766-ee7b-48ee-9413-c818339a39ba
+    done
