@@ -180,7 +180,8 @@ class ShowDesktop(command.ShowOne):
         desktop = client.desktops.find(args.desktop_id)
 
         # replace security groups
-        # sg_list = [utils.find_resource(compute.security_groups, sg['id']).name
+        # sg_list = [utils.find_resource(compute.security_groups,
+        #                                sg['id']).name
         #            for sg in desktop.security_groups]
         # desktop.security_groups = sg_list
         desktop.security_groups = [sg['id'] for sg in desktop.security_groups]

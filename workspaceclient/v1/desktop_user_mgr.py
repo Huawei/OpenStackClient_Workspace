@@ -32,9 +32,9 @@ class DesktopUserManager(manager.Manager):
         })
         return self._list("/desktop-users", params=params, key="users")
 
-    def list_login_records(self, start_time=None, end_time=None, user_name=None,
-                           computer_name=None, terminal_type=None, offset=None,
-                           limit=None):
+    def list_login_records(self, start_time=None, end_time=None,
+                           user_name=None, computer_name=None,
+                           terminal_type=None, offset=None, limit=None):
         str_fmt = "%Y-%m-%d %H:%M"
         start_time_str = start_time.strftime(str_fmt) if start_time else None
         end_time_str = end_time.strftime(str_fmt) if end_time else None

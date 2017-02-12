@@ -85,7 +85,11 @@ class TestPolicyShow(TestPolicy):
         columns, data = self.cmd.take_action(None)
 
         expect_data = (
-            'Enabled', 'Disabled', 'Enabled', 'Disabled', 'Enabled', 'Disabled')
+            'Enabled', 'Disabled', 'Enabled', 'Disabled', 'Enabled',
+            'Disabled', 'Enabled', 'Disabled', 'Universal Printing PCL 6',
+            'READ_AND_WRITE', 'Enabled', 'Disabled', 'Enabled', 'Enabled',
+            'TWO_WAY_ENABLED', 'Disabled', 'QUALITY_FIRST', 24315, 18, 20,
+            58, 88)
         self.assertEqual(expect_data, data)
 
 
