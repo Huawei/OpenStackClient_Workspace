@@ -1,5 +1,5 @@
-Commands
-===============
+Desktop Commands
+================
 
 1. desktop list(查询桌面列表)::
 
@@ -13,7 +13,7 @@ Commands
     | 018b7f70-8d13-4e3c-a5d9-162ae6f34d8f | otcdemo01     | otcdemo     | 192.168.0.21 | 2016-12-24T08:58:59.000Z |
     +--------------------------------------+---------------+-------------+--------------+--------------------------+
 
-2. desktop detail list(查询桌面详情列表)::
+#. desktop detail list(查询桌面详情列表)::
 
     $ openstack desktop detail list --user-name=otcdemo  --marker=393d8766-ee7b-48ee-9413-c818339a39ba
         --os-workspace-endpoint-override=https://workspace.eu-de.otc.t-systems.com
@@ -34,7 +34,7 @@ Commands
     $ openstack desktop start otcdemo03
     done
 
-#. desktop start(关闭桌面)::
+#. desktop stop(关闭桌面)::
 
     $ openstack desktop stop 393d8766-ee7b-48ee-9413-c818339a39ba
     done
@@ -68,3 +68,53 @@ Commands
     | Login Status    | DISCONNECTED                                                                                                     |
     | Status          | ACTIVE                                                                                                           |
     +-----------------+------------------------------------------------------------------------------------------------------------------+
+
+
+
+Product Commands
+================
+
+1. openstack workspace product list(查询产品套餐列表)::
+
+    +------------------------------+-------------+------+----------------------------------------------------------------------------------------------------+
+    | Product ID                   | Flavor ID   | Type | Descriptions                                                                                       |
+    +------------------------------+-------------+------+----------------------------------------------------------------------------------------------------+
+    | workspace.c2.large.windows   | computev2-2 | BASE | CPU:2vCPUs,Memory:4096GB,Operating System:Windows Server 2008 R2 Enterprise 64bit                  |
+    | workspace.c2.xlarge.windows  | computev2-3 | BASE | CPU:4vCPUs,Memory:8192GB,Operating System:Windows Server 2008 R2 Enterprise 64bit                  |
+    | workspace.c2.2xlarge.windows | computev2-4 | BASE | CPU:8vCPUs,Memory:16384GB,Operating System:Windows Server 2008 R2 Enterprise 64bit                 |
+    | workspace.g1.xlarge.windows  | g1.xlarge   | BASE | CPU:4vCPUs,Memory:8192GB,Operating System:Windows Server 2008 R2 Enterprise 64bit,GPU:M60-1Q(1GB)  |
+    | workspace.g1.2xlarge.windows | g1.2xlarge  | BASE | CPU:8vCPUs,Memory:16384GB,Operating System:Windows Server 2008 R2 Enterprise 64bit,GPU:M60-1Q(1GB) |
+    +------------------------------+-------------+------+----------------------------------------------------------------------------------------------------+
+
+
+Policy Commands
+===============
+
+1. openstack workspace policy show(查询策略)::
+
+    +-------------------------------+------------------+
+    | Field                         | Value            |
+    +-------------------------------+------------------+
+    | USB port redirection          | Disabled         |
+    | USB image                     | Enabled          |
+    | USB video                     | Disabled         |
+    | USB printer                   | Enabled          |
+    | USB storage                   | Enabled          |
+    | USB smart card                | Enabled          |
+    | Printer redirection           | Disabled         |
+    | sync client default printer   | Enabled          |
+    | universal printer driver      | Default          |
+    | File redirection mode         | DISABLED         |
+    | fixed drive                   | Disabled         |
+    | removable drive               | Disabled         |
+    | cd rom drive                  | Disabled         |
+    | network drive                 | Disabled         |
+    | clipboard redirection         | DISABLED         |
+    | hdp plus                      | Disabled         |
+    | hdp display level             | SMOOTHNESS_FIRST |
+    | hdp bandwidth                 | 20000            |
+    | hdp frame rate                | 25               |
+    | hdp video frame rate          | 30               |
+    | hdp smoothing factor          | 60               |
+    | hdp lossy compression quality | 85               |
+    +-------------------------------+------------------+

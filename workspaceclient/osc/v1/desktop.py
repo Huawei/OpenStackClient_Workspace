@@ -13,11 +13,10 @@
 #   under the License.
 #
 import logging
-
-import itertools
 import six
-from osc_lib import utils
+
 from osc_lib.command import command
+
 from workspaceclient.common import parser_builder as p
 from workspaceclient.common.i18n import _
 from workspaceclient.osc.v1 import parser_builder as pb
@@ -41,9 +40,9 @@ class ListDesktop(command.Lister):
 
     def take_action(self, args):
         client = self.app.client_manager.workspace
-        desktops = client.desktop.list(args.desktop_ip, args.status,
-                                       args.user_name, args.computer_name,
-                                       args.marker, args.limit)
+        desktops = client.desktops.list(args.desktop_ip, args.status,
+                                        args.user_name, args.computer_name,
+                                        args.marker, args.limit)
         columns = resource.Desktop.list_column_names
         data = [r.get_display_data(columns) for r in desktops]
         return columns, data
@@ -64,12 +63,12 @@ class ListDesktopDetail(command.Lister):
 
     def take_action(self, args):
         client = self.app.client_manager.workspace
-        desktops = client.desktop.list_detail(args.desktop_ip,
-                                              args.status,
-                                              args.user_name,
-                                              args.computer_name,
-                                              args.marker,
-                                              args.limit)
+        desktops = client.desktops.list_detail(args.desktop_ip,
+                                               args.status,
+                                               args.user_name,
+                                               args.computer_name,
+                                               args.marker,
+                                               args.limit)
         columns = resource.Desktop.list_detail_column_names
         data = [r.get_display_data(columns) for r in desktops]
         return columns, data
@@ -86,8 +85,8 @@ class RebootDesktop(command.Command):
 
     def take_action(self, args):
         client = self.app.client_manager.workspace
-        desktop = client.desktop.find(args.desktop_id)
-        client.desktop.reboot(desktop.desktop_id, args.force)
+        desktop = client.desktops.find(args.desktop_id)
+        client.desktops.reboot(desktop.desktop_id, args.force)
         return "done"
 
 
@@ -115,8 +114,8 @@ class StartDesktop(command.Command):
 
     def take_action(self, args):
         client = self.app.client_manager.workspace
-        desktop = client.desktop.find(args.desktop_id)
-        client.desktop.start(desktop.desktop_id)
+        desktop = client.desktops.find(args.desktop_id)
+        client.desktops.start(desktop.desktop_id)
         return "done"
 
 
@@ -130,8 +129,8 @@ class StopDesktop(command.Command):
 
     def take_action(self, args):
         client = self.app.client_manager.workspace
-        desktop = client.desktop.find(args.desktop_id)
-        client.desktop.stop(desktop.desktop_id)
+        desktop = client.desktops.find(args.desktop_id)
+        client.desktops.stop(desktop.desktop_id)
         return "done"
 
 
@@ -145,8 +144,8 @@ class DeleteDesktop(command.Command):
 
     def take_action(self, args):
         client = self.app.client_manager.workspace
-        desktop = client.desktop.find(args.desktop_id)
-        client.desktop.delete(desktop.desktop_id)
+        desktop = client.desktops.find(args.desktop_id)
+        client.desktops.delete(desktop.desktop_id)
         return "done"
 
 
@@ -162,8 +161,8 @@ class EditDesktop(command.Command):
 
     def take_action(self, args):
         client = self.app.client_manager.workspace
-        desktop = client.desktop.find(args.desktop_id)
-        client.desktop.edit(desktop.desktop_id, args.computer_name)
+        desktop = client.desktops.find(args.desktop_id)
+        client.desktops.edit(desktop.desktop_id, args.computer_name)
         return args
 
 
@@ -178,7 +177,7 @@ class ShowDesktop(command.ShowOne):
     def take_action(self, args):
         compute = self.app.client_manager.compute
         client = self.app.client_manager.workspace
-        desktop = client.desktop.find(args.desktop_id)
+        desktop = client.desktops.find(args.desktop_id)
 
         # replace security groups
         # sg_list = [utils.find_resource(compute.security_groups, sg['id']).name

@@ -21,11 +21,12 @@ from workspaceclient.common import display
 from workspaceclient.common import manager
 from workspaceclient.common import resource as r
 from workspaceclient.common import utils
-
+from workspaceclient.v1 import desktop_mgr
+from workspaceclient.v1 import policy_mgr
+from workspaceclient.v1 import product_mgr
+from workspaceclient.v1 import workspace_mgr
 
 # fake request id
-from workspaceclient.v1 import desktop_mgr
-
 FAKE_REQUEST_ID = 'req-0594c66b-6973-405c-ae2c-43fcfc00f2e3'
 
 # fake resource id
@@ -121,4 +122,7 @@ class FakeWorkspaceV1Client(object):
 
     def __init__(self, **kwargs):
         self.fake_http_client = mock.Mock()
-        self.desktop = desktop_mgr.DesktopManager(self.fake_http_client)
+        self.desktops = desktop_mgr.DesktopManager(self.fake_http_client)
+        self.workspaces = workspace_mgr.WorkspaceManager(self.fake_http_client)
+        self.policies = policy_mgr.PolicyManager(self.fake_http_client)
+        self.products = product_mgr.ProductManager(self.fake_http_client)

@@ -12,74 +12,18 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 #
-from osc_lib import utils
+import logging
+
+from osc_lib import utils as formatter
 
 from workspaceclient.common import display
 from workspaceclient.common import resource
 
+LOG = logging.getLogger(__name__)
+
 
 class Desktop(resource.Resource, display.Display):
     """workspace desktop resource instance"""
-
-    {
-        "flavor": {
-            "id": "g1.2xlarge",
-            "links": [
-                {
-                    "rel": "bookmark",
-                    "hrel": "https://compute.region.eu-de.otc-tsi.de/075c841533dd4d7396a133b435a9e51c/flavors/g1.2xlarge"
-                }
-            ]
-        },
-        "metadata": {
-            "metering.image_id": "5d760057-4b1c-4b0c-8a8e-8e3f60daba61",
-            "metering.imagetype": "private",
-            "metering.resourcespeccode": "g1.2xlarge.win",
-            "metering.cloudServiceType": "sys.service.type.ec2",
-            "image_name": "Workspace_vGPU_User_Template1212",
-            "metering.resourcetype": "1",
-            "os_bit": "64",
-            "vpc_id": "9b577224-d5dd-46b2-9a8c-ea8e850e912d",
-            "os_type": "Windows",
-            "charging_mode": "0"
-        },
-        "addresses": {
-            "9b577224-d5dd-46b2-9a8c-ea8e850e912d": [
-                {
-                    "addr": "172.16.0.9",
-                    "version": 4,
-                    "OS-EXT-IPS-MAC:mac_addr": "fa:16:3e:8c:cf:63",
-                    "OS-EXT-IPS:type": "fixed"
-                },
-                {
-                    "addr": "100.64.226.125",
-                    "version": 4,
-                    "OS-EXT-IPS-MAC:mac_addr": "fa:16:3e:8c:cf:63",
-                    "OS-EXT-IPS:type": "floating"
-                }
-            ],
-            "62615060-5a38-42d4-a391-9b8a109da548": [
-                {
-                    "addr": "192.168.0.21",
-                    "version": 4,
-                    "OS-EXT-IPS-MAC:mac_addr": "fa:16:3e:d8:03:c6",
-                    "OS-EXT-IPS:type": "fixed"
-                }
-            ]
-        },
-        "product_id": "workspace.g1.2xlarge.windows",
-        "root_volume": {
-            "type": "SATA",
-            "size": 80
-        },
-        "data_volumes": [{
-            "type": "SATA",
-            "size": 80
-        }, {
-            "type": "SSD",
-            "size": 80
-        }]
-    }
 
     show_column_names = [
         "Desktop Id",
@@ -98,12 +42,12 @@ class Desktop(resource.Resource, display.Display):
     ]
 
     formatter = {
-        "Security Groups": utils.format_list,
+        "Security Groups": formatter.format_list,
         "Flavor": lambda flavor: flavor['id'],
-        "metadata": utils.format_dict,
-        "Root Volume": utils.format_dict,
-        "Data Volumes": utils.format_list_of_dicts,
-        "addresses": utils.format_list_of_dicts,
+        "metadata": formatter.format_dict,
+        "Root Volume": formatter.format_dict,
+        "Data Volumes": formatter.format_list_of_dicts,
+        "addresses": formatter.format_list_of_dicts,
     }
 
     list_column_names = [
@@ -121,4 +65,166 @@ class Desktop(resource.Resource, display.Display):
         "Product Id",
         "Login Status",
         "Status"
+    ]
+
+
+class Product(resource.Resource, display.Display):
+    """workspace product resource instance"""
+
+    list_column_names = [
+        "Product ID",
+        "Flavor ID",
+        "Type",
+        "Descriptions"
+    ]
+
+
+def format_bool_enable(enable):
+    return "Enabled" if enable else "Disabled"
+
+
+def format_prop_enable(target):
+    return format_bool_enable(target["enable"])
+
+
+def format_hdp_enable(target):
+    return format_bool_enable(target["hdp_plus_enable"])
+
+
+class Policy(resource.Resource, display.Display):
+    """workspace policy resource instance"""
+
+    show_column_names = [
+        "USB port redirection",
+        "USB image",
+        "USB video",
+        "USB printer",
+        "USB storage",
+        "USB smart card",
+
+        "Printer redirection",
+        "sync client default printer",
+        "universal printer driver",
+        #
+        "File redirection mode",
+        "fixed drive",
+        "removable drive",
+        "cd rom drive",
+        "network drive",
+
+        "clipboard redirection",
+        #
+        "hdp plus",
+        #
+        "hdp display level",
+        "hdp bandwidth",
+        "hdp frame rate",
+        "hdp video frame rate",
+        "hdp smoothing factor",
+        "hdp lossy compression quality",
+    ]
+
+    formatter = {
+        "USB port redirection": format_prop_enable,
+        "Printer redirection": format_prop_enable,
+        "hdp plus": format_hdp_enable,
+    }
+
+    @property
+    def hdp_plus_options(self):
+        return self.hdp_plus["options"]
+
+    @property
+    def hdp_display_level(self):
+        return self.hdp_plus["display_level"]
+
+    @property
+    def hdp_bandwidth(self):
+        return self.hdp_plus_options["bandwidth"]
+
+    @property
+    def hdp_frame_rate(self):
+        return self.hdp_plus_options["frame_rate"]
+
+    @property
+    def hdp_video_frame_rate(self):
+        return self.hdp_plus_options["video_frame_rate"]
+
+    @property
+    def hdp_smoothing_factor(self):
+        return self.hdp_plus_options["smoothing_factor"]
+
+    @property
+    def hdp_lossy_compression_quality(self):
+        return self.hdp_plus_options["lossy_compression_quality"]
+
+    @property
+    def file_options(self):
+        return self.file_redirection["options"]
+
+    @property
+    def file_redirection_mode(self):
+        return self.file_redirection["redirection_mode"]
+
+    @property
+    def fixed_drive(self):
+        return format_bool_enable(self.file_options["fixed_drive_enable"])
+
+    @property
+    def removable_drive(self):
+        return format_bool_enable(self.file_options["removable_drive_enable"])
+
+    @property
+    def cd_rom_drive(self):
+        return format_bool_enable(self.file_options["cd_rom_drive_enable"])
+
+    @property
+    def network_drive(self):
+        return format_bool_enable(self.file_options["network_drive_enable"])
+
+    @property
+    def universal_printer_driver(self):
+        printer_options = self.printer_redirection["options"]
+        return printer_options["universal_printer_driver"]
+
+    @property
+    def sync_client_default_printer(self):
+        printer_options = self.printer_redirection["options"]
+        return format_bool_enable(
+            printer_options["sync_client_default_printer_enable"]
+        )
+
+    @property
+    def usb_option(self):
+        return self.usb_port_redirection["options"]
+
+    @property
+    def usb_image(self):
+        return format_bool_enable(self.usb_option["usb_image_enable"])
+
+    @property
+    def usb_video(self):
+        return format_bool_enable(self.usb_option["usb_video_enable"])
+
+    @property
+    def usb_printer(self):
+        return format_bool_enable(self.usb_option["usb_printer_enable"])
+
+    @property
+    def usb_storage(self):
+        return format_bool_enable(self.usb_option["usb_storage_enable"])
+
+    @property
+    def usb_smart_card(self):
+        return format_bool_enable(self.usb_option["usb_smart_card_enable"])
+
+
+class DesktopUser(resource.Resource, display.Display):
+    """workspace desktop user resource instance"""
+
+    list_column_names = [
+        "Product ID",
+        "Flavor ID",
+        "Type",
+        "Descriptions"
     ]
