@@ -68,6 +68,17 @@ class Desktop(resource.Resource, display.Display):
     ]
 
 
+class Workspace(resource.Resource, display.Display):
+    """workspace desktop user resource instance"""
+
+    list_column_names = [
+        "Product ID",
+        "Flavor ID",
+        "Type",
+        "Descriptions"
+    ]
+
+
 class Product(resource.Resource, display.Display):
     """workspace product resource instance"""
 

@@ -15,8 +15,8 @@
 import logging
 
 from osc_lib.command import command
-
 from workspaceclient.common.i18n import _
+from workspaceclient.osc.v1 import parser_builder as pb
 from workspaceclient.v1 import resource
 
 LOG = logging.getLogger(__name__)
@@ -39,17 +39,61 @@ class ShowPolicy(command.ShowOne):
 
 
 class EditPolicy(command.Command):
-    _description = _("show policy")
+    _description = _("edit policy")
 
     def get_parser(self, prog_name):
         parser = super(EditPolicy, self).get_parser(prog_name)
+        # usb related
+        pb.PolicyParser.add_switch_arg(parser, 'usb-port-redirection')
+        pb.PolicyParser.add_switch_arg(parser, 'usb-image')
+        pb.PolicyParser.add_switch_arg(parser, 'usb-video')
+        pb.PolicyParser.add_switch_arg(parser, 'usb-printer')
+        pb.PolicyParser.add_switch_arg(parser, 'usb-storage')
+        pb.PolicyParser.add_switch_arg(parser, 'usb-smart-card')
+
+        # printer related
+        pb.PolicyParser.add_switch_arg(parser, 'printer-redirection')
+        pb.PolicyParser.add_switch_arg(parser, 'sync-client-default-printer')
+        pb.PolicyParser.add_printer_driver_arg(parser)
+
+        # file redirection related
+        pb.PolicyParser.add_file_redirection_mode_arg(parser)
+        pb.PolicyParser.add_switch_arg(parser, 'fixed-drive')
+        pb.PolicyParser.add_switch_arg(parser, 'removable-drive')
+        pb.PolicyParser.add_switch_arg(parser, 'cd-rom-drive')
+        pb.PolicyParser.add_switch_arg(parser, 'network-drive')
+
+        # clipboard redirection
+        pb.PolicyParser.add_clipboard_redirection_arg(parser)
+
+        # hdp plus
+        pb.PolicyParser.add_switch_arg(parser, 'hdp-plus')
+        pb.PolicyParser.add_display_level_arg(parser)
+        pb.PolicyParser.add_bandwidth_arg(parser)
+        pb.PolicyParser.add_frame_rate_arg(parser)
+        pb.PolicyParser.add_video_frame_rate_arg(parser)
+        pb.PolicyParser.add_smoothing_factor_arg(parser)
+        pb.PolicyParser.add_lossy_compression_quality_arg(parser)
+
         return parser
 
     def take_action(self, args):
         client = self.app.client_manager.workspace
-        policy = client.policies.get()
-        columns = resource.Policy.show_column_names
-        formatter = resource.Policy.formatter
-        outputs = policy.get_display_data(columns, formatter=formatter)
-
-        return columns, outputs
+        client.policies.edit(args.enable_usb_port_redirection,
+                             args.enable_usb_image, args.enable_usb_video,
+                             args.enable_usb_printer, args.enable_usb_storage,
+                             args.enable_usb_smart_card,
+                             args.enable_printer_redirection,
+                             args.enable_sync_client_default_printer,
+                             args.universal_printer_driver,
+                             args.file_redirection_mode,
+                             args.enable_fixed_drive,
+                             args.enable_removable_drive,
+                             args.enable_cd_rom_drive,
+                             args.enable_network_drive,
+                             args.clipboard_redirection, args.enable_hdp_plus,
+                             args.display_level, args.bandwidth,
+                             args.frame_rate, args.video_frame_rate,
+                             args.smoothing_factor,
+                             args.lossy_compression_quality)
+        return 'done'

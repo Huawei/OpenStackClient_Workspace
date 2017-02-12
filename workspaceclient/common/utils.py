@@ -33,7 +33,8 @@ def remove_empty_from_dict(original):
     :param dict original: original dict, should not be None
     :return: a new dict which removes keys with empty values
     """
-    return dict((k, v) for k, v in original.iteritems() if v)
+    return dict((k, v) for k, v in original.iteritems()
+                if v is not None and v != '')
 
 
 def str_range(start, end):

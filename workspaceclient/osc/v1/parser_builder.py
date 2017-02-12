@@ -12,6 +12,7 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 #
+from workspaceclient.common import parsetypes
 from workspaceclient.common.i18n import _
 
 
@@ -91,4 +92,120 @@ class DesktopParser(object):
             required=required,
             help=_("Change computer name to (must be unique, "
                    "[a-zA-Z0-9-_] allowed, start with [a-zA-Z])")
+        )
+
+
+class PolicyParser(object):
+
+    @staticmethod
+    def add_switch_arg(parser, name, required=False):
+        group = parser.add_mutually_exclusive_group(required=required)
+        group.add_argument(
+            '--enable-%s' % name,
+            action="store_true",
+            default=None,
+            dest='enable_%s' % name.replace("-", "_"),
+            help=_("enable %s" % name.replace("-", " "))
+        )
+        group.add_argument(
+            '--disable-%s' % name,
+            action="store_false",
+            default=None,
+            dest='enable_%s' % name.replace("-", "_"),
+            help=_("disable %s" % name.replace("-", " "))
+        )
+
+    @staticmethod
+    def add_printer_driver_arg(parser):
+        parser.add_argument(
+            "--universal-printer-driver",
+            choices=[
+                "Default",
+                "HDP XPSDrv Driver",
+                "Universal Printing PCL 5",
+                "Universal Printing PCL 6",
+                "Universal Printing PS"
+            ],
+            help=_("setup universal printer driver")
+        )
+
+    @staticmethod
+    def add_file_redirection_mode_arg(parser):
+        parser.add_argument(
+            "--file-redirection-mode",
+            choices=[
+                "DISABLED",
+                "READ_ONLY",
+                "READ_AND_WRITE",
+            ],
+            help=_("setup file redirection mode")
+        )
+
+    @staticmethod
+    def add_clipboard_redirection_arg(parser):
+        parser.add_argument(
+            "--clipboard-redirection",
+            choices=[
+                "DISABLED",
+                "SERVER_TO_CLIENT_ENABLED",
+                "CLIENT_TO_SERVER_ENABLED",
+                "TWO_WAY_ENABLED",
+            ],
+            help=_("setup clipboard redirection")
+        )
+
+    @staticmethod
+    def add_display_level_arg(parser):
+        parser.add_argument(
+            "--display-level",
+            choices=[
+                "SMOOTHNESS_FIRST",
+                "QUALITY_FIRST",
+            ],
+            help=_("display level")
+        )
+
+    @staticmethod
+    def add_bandwidth_arg(parser):
+        parser.add_argument(
+            "--bandwidth",
+            metavar="<Kbps>",
+            type=parsetypes.int_range_type(1000, 25000),
+            help=_("Bandwidth, value range is [1000-25000]")
+        )
+
+    @staticmethod
+    def add_frame_rate_arg(parser):
+        parser.add_argument(
+            "--frame-rate",
+            metavar="<FPS>",
+            type=parsetypes.int_range_type(15, 30),
+            help=_("Frame rate, value range is [15-30]")
+        )
+
+    @staticmethod
+    def add_video_frame_rate_arg(parser):
+        parser.add_argument(
+            "--video-frame-rate",
+            metavar="<FPS>",
+            type=parsetypes.int_range_type(15, 50),
+            help=_("Video frame rate, value range is [15-50]")
+        )
+
+    @staticmethod
+    def add_smoothing_factor_arg(parser):
+        parser.add_argument(
+            "--smoothing-factor",
+            metavar="<smoothing-factor>",
+            type=parsetypes.int_range_type(0, 60),
+            help=_("Video frame rate, value range is [0-60]")
+        )
+
+    @staticmethod
+    def add_lossy_compression_quality_arg(parser):
+        parser.add_argument(
+            "--lossy-compression-quality",
+            metavar="<quality>",
+            type=parsetypes.int_range_type(70, 90),
+            help=_("lossy compression quality, value range is [70-90]")
         )
