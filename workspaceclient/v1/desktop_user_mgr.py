@@ -12,12 +12,9 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 #
-from keystoneauth1 import exceptions
 
-from workspaceclient.common import exceptions as execs
 from workspaceclient.common import manager
 from workspaceclient.common import utils
-from workspaceclient.common.i18n import _
 from workspaceclient.v1 import resource
 
 
@@ -34,3 +31,24 @@ class DesktopUserManager(manager.Manager):
             "limit": limit
         })
         return self._list("/desktop-users", params=params, key="users")
+
+    def list_login_records(self, start_time=None, end_time=None, user_name=None,
+                           computer_name=None, terminal_type=None, offset=None,
+                           limit=None):
+        str_fmt = "%Y-%m-%d %H:%M"
+        start_time_str = start_time.strftime(str_fmt) if start_time else None
+        end_time_str = end_time.strftime(str_fmt) if end_time else None
+
+        params = utils.remove_empty_from_dict({
+            "start_time": start_time_str,
+            "end_time": end_time_str,
+            "user_name": user_name,
+            "computer_name": computer_name,
+            "terminal_type": terminal_type,
+            "offset": offset,
+            "limit": limit,
+        })
+        return self._list("/desktop-users/login-records",
+                          params=params,
+                          key="records",
+                          resource_class=resource.DesktopLoginRecords)

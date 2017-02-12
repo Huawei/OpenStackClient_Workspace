@@ -85,7 +85,7 @@ class TestPolicyShow(TestPolicy):
         columns, data = self.cmd.take_action(None)
 
         expect_data = (
-        'Enabled', 'Disabled', 'Enabled', 'Disabled', 'Enabled', 'Disabled')
+            'Enabled', 'Disabled', 'Enabled', 'Disabled', 'Enabled', 'Disabled')
         self.assertEqual(expect_data, data)
 
 
@@ -96,7 +96,6 @@ class TestPolicyEdit(TestPolicy):
 
     @mock.patch.object(policy_mgr.PolicyManager, "_update_all")
     def test_enable_redirection_options(self, mocked_put):
-
         args = [
             "--enable-usb-port-redirection",
             "--enable-usb-image",
@@ -114,11 +113,17 @@ class TestPolicyEdit(TestPolicy):
             "--enable-removable-drive",
             "--enable-cd-rom-drive",
             "--enable-network-drive",
+            "--enable-network-drive",
 
             "--clipboard-redirection", "DISABLED",
 
-
-            "--bandwidth", "1900",
+            "--enable-hdp-plus",
+            "--display-level", "QUALITY_FIRST",
+            "--bandwidth", "24315",
+            "--frame-rate", "18",
+            "--video-frame-rate", "20",
+            "--smoothing-factor", "58",
+            "--lossy-compression-quality", "88"
         ]
         verify_args = [
             ("enable_usb_port_redirection", True),
@@ -140,7 +145,13 @@ class TestPolicyEdit(TestPolicy):
 
             ("clipboard_redirection", "DISABLED"),
 
-            ("bandwidth", 1900),
+            ("enable_hdp_plus", True),
+            ("display_level", "QUALITY_FIRST"),
+            ("bandwidth", 24315),
+            ("frame_rate", 18),
+            ("video_frame_rate", 20),
+            ("smoothing_factor", 58),
+            ("lossy_compression_quality", 88),
         ]
         parsed_args = self.check_parser(self.cmd, args, verify_args)
 
@@ -177,6 +188,79 @@ class TestPolicyEdit(TestPolicy):
                 },
                 "clipboard_redirection": "DISABLED",
 
+                "hdp_plus": {
+                    "hdp_plus_enable": True,
+                    "display_level": "QUALITY_FIRST",
+                    "options": {
+                        "lossy_compression_quality": 88
+                    }
+                }
+            }
+        }
+        mocked_put.assert_called_once_with(
+            "/policies", json=json
+        )
+
+    @mock.patch.object(policy_mgr.PolicyManager, "_update_all")
+    def test_disable_redirection_options(self, mocked_put):
+        args = [
+            "--disable-usb-port-redirection",
+            "--enable-usb-image",
+            "--enable-usb-video",
+            "--enable-usb-printer",
+            "--enable-usb-storage",
+            "--enable-usb-smart-card",
+
+            "--disable-printer-redirection",
+            "--enable-sync-client-default-printer",
+            "--universal-printer-driver", "Universal Printing PCL 6",
+
+            "--file-redirection-mode", "DISABLED",
+            "--enable-fixed-drive",
+            "--enable-removable-drive",
+            "--enable-cd-rom-drive",
+            "--enable-network-drive",
+            "--enable-network-drive",
+
+            "--clipboard-redirection", "DISABLED",
+        ]
+        verify_args = [
+            ("enable_usb_port_redirection", False),
+            ("enable_usb_image", True),
+            ("enable_usb_video", True),
+            ("enable_usb_printer", True),
+            ("enable_usb_storage", True),
+            ("enable_usb_smart_card", True),
+
+            ("enable_printer_redirection", False),
+            ("enable_sync_client_default_printer", True),
+            ("universal_printer_driver", "Universal Printing PCL 6"),
+
+            ("file_redirection_mode", "DISABLED"),
+            ("enable_fixed_drive", True),
+            ("enable_removable_drive", True),
+            ("enable_cd_rom_drive", True),
+            ("enable_network_drive", True),
+
+            ("clipboard_redirection", "DISABLED"),
+        ]
+        parsed_args = self.check_parser(self.cmd, args, verify_args)
+
+        mocked_put.return_value = base_resource.StrWithMeta("", "Request-Id")
+        result = self.cmd.take_action(parsed_args)
+
+        json = {
+            "policies": {
+                "usb_port_redirection": {
+                    "enable": False,
+                },
+                "printer_redirection": {
+                    "enable": False,
+                },
+                "file_redirection": {
+                    "redirection_mode": "DISABLED",
+                },
+                "clipboard_redirection": "DISABLED",
             }
         }
         mocked_put.assert_called_once_with(

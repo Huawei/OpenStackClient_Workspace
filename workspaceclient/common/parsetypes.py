@@ -18,12 +18,16 @@ from datetime import datetime
 from osc_lib.i18n import _
 
 
-def date_type(user_input):
-    try:
-        return datetime.strptime(user_input, "%Y-%m-%d")
-    except ValueError:
-        msg = _("Not a valid date: %s") % user_input
+def date_type(date_format):
+    def wrapped(user_input):
+        try:
+            return datetime.strptime(user_input, date_format)
+        except ValueError:
+            tpl = _("%s is not a valid date with format %s")
+            msg = tpl % (user_input, date_format)
         raise argparse.ArgumentTypeError(msg)
+
+    return wrapped
 
 
 def int_range_type(from_, to):
@@ -35,13 +39,13 @@ def int_range_type(from_, to):
             raise argparse.ArgumentTypeError(msg)
 
         if int_user_input > to:
-            msg = _("Your input %s is great than max valid value %d") \
-                  % (user_input, to)
+            tpl = _("Your input %s is great than max valid value %d")
+            msg = tpl % (user_input, to)
             raise argparse.ArgumentTypeError(msg)
 
         if int_user_input < from_:
-            msg = _("Your input %s is less than min valid value %d") \
-                  % (user_input, from_)
+            tpl = _("Your input %s is less than min valid value %d")
+            msg = tpl % (user_input, from_)
             raise argparse.ArgumentTypeError(msg)
 
         return int_user_input

@@ -234,8 +234,34 @@ class DesktopUser(resource.Resource, display.Display):
     """workspace desktop user resource instance"""
 
     list_column_names = [
-        "Product ID",
-        "Flavor ID",
-        "Type",
-        "Descriptions"
+        "Name",
+        "Email",
+        "Domain Name",
+        "Domain Type"
+    ]
+
+    column_2_property = {
+        "Name": "user_name",
+        "Email": "user_type",
+    }
+
+    @property
+    def domain_name(self):
+        return self.ad_domains["domain_name"]
+
+    @property
+    def domain_type(self):
+        return self.ad_domains["domain_type"]
+
+
+class DesktopLoginRecords(resource.Resource, display.Display):
+    """workspace desktop login record resource instance"""
+
+    list_column_names = [
+        "Computer Name",
+        "User Name",
+        "Terminal Name",
+        "Terminal Type",
+        "Connection start time",
+        "Connection end time",
     ]

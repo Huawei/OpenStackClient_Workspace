@@ -17,6 +17,7 @@ from workspaceclient.common.i18n import _
 
 
 class DesktopParser(object):
+
     @staticmethod
     def add_desktop_id_arg(parser, op):
         parser.add_argument(
@@ -208,4 +209,76 @@ class PolicyParser(object):
             metavar="<quality>",
             type=parsetypes.int_range_type(70, 90),
             help=_("lossy compression quality, value range is [70-90]")
+        )
+
+
+class DesktopUserParser(object):
+
+    @staticmethod
+    def add_username_option(parser):
+        parser.add_argument(
+            "--user-name",
+            metavar="<user-name>",
+            help=_("list desktop users with name")
+        )
+
+    @staticmethod
+    def add_email_option(parser):
+        parser.add_argument(
+            "--user-email",
+            metavar="<user-email>",
+            help=_("list desktop users with email")
+        )
+
+    @staticmethod
+    def add_marker_option(parser):
+        parser.add_argument(
+            "--marker",
+            metavar="<user-name>",
+            help=_("The last user-name of the previous page")
+        )
+
+    @staticmethod
+    def add_start_time_option(parser):
+        parser.add_argument(
+            "--start-time",
+            metavar="<yyyy-MM-dd HH:mm>",
+            type=parsetypes.date_type('%Y-%m-%d %H:%M'),
+            help=_("list login records after the UTC time")
+        )
+
+    @staticmethod
+    def add_end_time_option(parser):
+        parser.add_argument(
+            "--end-time",
+            metavar="<yyyy-MM-dd HH:mm>",
+            type=parsetypes.date_type('%Y-%m-%d %H:%M'),
+            help=_("list login records before the UTC time")
+        )
+
+    @staticmethod
+    def add_computer_name_option(parser, required=False):
+        parser.add_argument(
+            "--computer-name",
+            metavar="<computer-name>",
+            required=required,
+            help=_("list login records for desktop with computer name")
+        )
+
+    @staticmethod
+    def add_user_name_option(parser, required=False):
+        parser.add_argument(
+            "--user-name",
+            metavar="<user-name>",
+            required=required,
+            help=_("list login records which login with user-name")
+        )
+
+    @staticmethod
+    def add_terminal_type_option(parser, required=False):
+        parser.add_argument(
+            "--terminal-type",
+            metavar="<terminal-type>",
+            required=required,
+            help=_("list login records which login from terminal type")
         )

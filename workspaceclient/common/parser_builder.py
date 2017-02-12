@@ -52,15 +52,6 @@ class BaseParser(object):
         )
 
     @staticmethod
-    def add_marker_option(parser):
-        parser.add_argument(
-            "--marker",
-            metavar="<desktop-id>",
-            type=int,
-            help=_("list result next to desktop id")
-        )
-
-    @staticmethod
     def add_offset_option(parser):
         parser.add_argument(
             "--offset",
