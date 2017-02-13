@@ -39,12 +39,12 @@ Desktop Commands
     $ openstack desktop stop 393d8766-ee7b-48ee-9413-c818339a39ba
     done
 
-#. --desktop delete(删除桌面)::
+#. desktop delete(删除桌面)::
 
     $ openstack desktop delete 393d8766-ee7b-48ee-9413-c818339a39ba
     done
 
-#. --desktop show(查看桌面详情)::
+#. desktop show(查看桌面详情)::
 
     $ openstack desktop show otcdemo03
     +-----------------+------------------------------------------------------------------------------------------------------------------+
@@ -70,6 +70,10 @@ Desktop Commands
     +-----------------+------------------------------------------------------------------------------------------------------------------+
 
 
+#. desktop edit(修改桌面属性)::
+
+    $ openstack desktop edit --computer-name=woo2
+    done
 
 Product Commands
 ================
@@ -90,8 +94,9 @@ Product Commands
 Policy Commands
 ===============
 
-1. openstack workspace policy show(查询策略)::
+1. workspace policy show(查询策略)::
 
+    $ openstack workspace policy show
     +-------------------------------+------------------+
     | Field                         | Value            |
     +-------------------------------+------------------+
@@ -118,3 +123,24 @@ Policy Commands
     | hdp smoothing factor          | 60               |
     | hdp lossy compression quality | 85               |
     +-------------------------------+------------------+
+
+
+#. workspace policy edit(修改策略)::
+
+    $ openstack workspace policy edit --enable-usb-port-redirection
+    --enable-usb-image --disable-usb-video
+    done
+
+
+Desktop User Commands
+======================
+
+1. desktop user list(查询桌面用户列表)::
+
+    $ openstack desktop user list --user-name=woo
+    暂时无测试数据
+
+#. desktop login list(查询桌面用户列表)::
+
+    $ openstack desktop login list
+    暂时无测试数据
