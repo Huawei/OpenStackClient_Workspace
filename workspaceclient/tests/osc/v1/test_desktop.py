@@ -13,9 +13,12 @@
 #   under the License.
 #
 import random
-
 import mock
+
+from keystoneclient import exceptions
+
 from workspaceclient.common import resource as base_resource
+from workspaceclient.common import exceptions as execs
 from workspaceclient.osc.v1 import desktop
 from workspaceclient.tests import base
 from workspaceclient.v1 import desktop_mgr
@@ -169,6 +172,46 @@ class TestDesktopShow(TestDesktop):
         super(TestDesktopShow, self).setUp()
         self.cmd = desktop.ShowDesktop(self.app, None)
 
+    @mock.patch.object(desktop_mgr.DesktopManager, "_get")
+    def test_find_desktop_with_id(self, mocked):
+        desktops = self.app.client_manager.workspace.desktops
+        get_return = self.get_fake_desktop()
+        mocked.return_value = get_return
+        find = desktops.find("desktop-id-1")
+        mocked.assert_called_once_with("/desktops/desktop-id-1",
+                                       key='desktop')
+        self.assertEquals(get_return, find)
+
+    @mock.patch.object(desktop_mgr.DesktopManager, "_list")
+    @mock.patch.object(desktop_mgr.DesktopManager, "_get")
+    def test_find_desktop_with_name(self, mocked_get, mock_list):
+        desktops = self.app.client_manager.workspace.desktops
+        mocked_get.side_effect = exceptions.ClientException(0)
+
+        d = self.get_fake_desktop(instance=self.instances[1])
+        mock_list.return_value = base_resource.ListWithMeta([d], None)
+        find = desktops.find("chen01")
+        mock_list.assert_called_once_with("/desktops/detail",
+                                          params=dict(computer_name="chen01"),
+                                          key="desktops")
+        self.assertEquals(d, find)
+
+    @mock.patch.object(desktop_mgr.DesktopManager, "_list")
+    @mock.patch.object(desktop_mgr.DesktopManager, "_get")
+    def test_find_desktop_with_name_not_unique(self, mocked_get, mock_list):
+        desktops = self.app.client_manager.workspace.desktops
+        mocked_get.side_effect = exceptions.ClientException(0)
+        mock_list.return_value = self.get_fake_desktop_list(count=2)
+        self.assertRaises(execs.NotUniqueMatch, desktops.find, "chen01")
+
+    @mock.patch.object(desktop_mgr.DesktopManager, "_list")
+    @mock.patch.object(desktop_mgr.DesktopManager, "_get")
+    def test_find_desktop_with_name_no_match(self, mocked_get, mock_list):
+        desktops = self.app.client_manager.workspace.desktops
+        mocked_get.side_effect = exceptions.ClientException(0)
+        mock_list.return_value = base_resource.ListWithMeta([], None)
+        self.assertRaises(exceptions.NotFound, desktops.find, "chen01")
+
     # @mock.patch.object(utils, "find_resource")
     @mock.patch.object(desktop_mgr.DesktopManager, "find")
     def test_desktop_show_with_computer_name(self, mocked_find):
@@ -293,3 +336,194 @@ class TestDesktopList(TestDesktop):
                     ('b94a88e9-b67d-40d3-a3be-d207826ffdf2', 'huangyq301',
                      'huangyq3', '192.168.0.34', '2016-10-06T11:39:22.000Z')]
         self.assertEquals(expected, data)
+
+
+class TestDesktopDetailList(TestDesktop):
+    def setUp(self):
+        super(TestDesktopDetailList, self).setUp()
+        self.cmd = desktop.ListDesktopDetail(self.app, None)
+
+    @mock.patch.object(desktop_mgr.DesktopManager, "_list")
+    def test_desktop_list(self, mocked_list):
+        args = [
+            "--status", "ACTIVE",
+            "--desktop-ip", "10.10.10.10",
+            "--user-name", "user01",
+            "--computer-name", "computer01",
+            "--marker", "desktop-id",
+            "--limit", "10",
+        ]
+        verify_args = [
+            ("status", "ACTIVE"),
+            ("desktop_ip", "10.10.10.10"),
+            ("user_name", "user01"),
+            ("computer_name", "computer01"),
+            ("marker", "desktop-id"),
+            ("limit", 10),
+        ]
+        parsed_args = self.check_parser(self.cmd, args, verify_args)
+
+        desktops = self.get_fake_desktop_list(count=2)
+        mocked_list.return_value = desktops
+        columns, data = self.cmd.take_action(parsed_args)
+
+        params = {
+            "status": "ACTIVE",
+            "desktop_ip": "10.10.10.10",
+            "user_name": "user01",
+            "computer_name": "computer01",
+            "marker": "desktop-id",
+            "limit": 10,
+        }
+
+        mocked_list.assert_called_once_with("/desktops/detail",
+                                            params=params,
+                                            key='desktops')
+
+        self.assertEquals(resource.Desktop.list_detail_column_names, columns)
+        expected = [d.get_display_data(columns) for d in desktops]
+        self.assertEquals(expected, data)
+
+
+class TestDesktopDelete(TestDesktop):
+    def setUp(self):
+        super(TestDesktopDelete, self).setUp()
+        self.cmd = desktop.DeleteDesktop(self.app, None)
+
+    @mock.patch.object(desktop_mgr.DesktopManager, "_delete")
+    def test_desktop_list(self, mocked):
+        args = [
+            "desktop-id-1"
+        ]
+        verify_args = [
+            ("desktop_id", "desktop-id-1"),
+        ]
+        parsed_args = self.check_parser(self.cmd, args, verify_args)
+        with self.mocked_find:
+            mocked.return_value = base_resource.StrWithMeta("", "Request-ID")
+            result = self.cmd.take_action(parsed_args)
+            mocked.assert_called_once_with(
+                "/desktops/" + self._desktop.desktop_id)
+            self.assertEquals("done", result)
+
+
+class TestDesktopReboot(TestDesktop):
+    def setUp(self):
+        super(TestDesktopReboot, self).setUp()
+        self.cmd = desktop.RebootDesktop(self.app, None)
+
+    @mock.patch.object(desktop_mgr.DesktopManager, "_create")
+    def test_hard_reboot(self, mocked):
+        args = ["desktop-id-1", "--hard"]
+        verify_args = [
+            ("desktop_id", "desktop-id-1"),
+            ("force", True),
+        ]
+        parsed_args = self.check_parser(self.cmd, args, verify_args)
+        with self.mocked_find:
+            mocked.return_value = base_resource.StrWithMeta("", "Request-ID")
+            result = self.cmd.take_action(parsed_args)
+            mocked.assert_called_once_with(
+                "/desktops/%s/action" % self._desktop.desktop_id,
+                json={
+                    "reboot": {
+                        "type": "HARD"
+                    }
+                }
+            )
+            self.assertEquals("done", result)
+
+    @mock.patch.object(desktop_mgr.DesktopManager, "_create")
+    def test_soft_reboot(self, mocked):
+        args = ["desktop-id-1", "--soft"]
+        verify_args = [
+            ("desktop_id", "desktop-id-1"),
+            ("force", False),
+        ]
+        parsed_args = self.check_parser(self.cmd, args, verify_args)
+        with self.mocked_find:
+            mocked.return_value = base_resource.StrWithMeta("", "Request-ID")
+            result = self.cmd.take_action(parsed_args)
+            mocked.assert_called_once_with(
+                "/desktops/%s/action" % self._desktop.desktop_id,
+                json={
+                    "reboot": {
+                        "type": "SOFT"
+                    }
+                }
+            )
+            self.assertEquals("done", result)
+
+
+class TestDesktopStart(TestDesktop):
+    def setUp(self):
+        super(TestDesktopStart, self).setUp()
+        self.cmd = desktop.StartDesktop(self.app, None)
+
+    @mock.patch.object(desktop_mgr.DesktopManager, "_create")
+    def test_start_desktop(self, mocked):
+        args = ["desktop-id-1"]
+        verify_args = [("desktop_id", "desktop-id-1"), ]
+        parsed_args = self.check_parser(self.cmd, args, verify_args)
+
+        with self.mocked_find:
+            mocked.return_value = base_resource.StrWithMeta("", "Request-ID")
+            result = self.cmd.take_action(parsed_args)
+            mocked.assert_called_once_with(
+                "/desktops/%s/action" % self._desktop.desktop_id,
+                json={
+                    "os-start": None
+                }
+            )
+            self.assertEquals("done", result)
+
+
+class TestDesktopStop(TestDesktop):
+    def setUp(self):
+        super(TestDesktopStop, self).setUp()
+        self.cmd = desktop.StopDesktop(self.app, None)
+
+    @mock.patch.object(desktop_mgr.DesktopManager, "_create")
+    def test_stop_desktop(self, mocked):
+        args = ["desktop-id-1"]
+        verify_args = [("desktop_id", "desktop-id-1"), ]
+        parsed_args = self.check_parser(self.cmd, args, verify_args)
+
+        with self.mocked_find:
+            mocked.return_value = base_resource.StrWithMeta("", "Request-ID")
+            result = self.cmd.take_action(parsed_args)
+            mocked.assert_called_once_with(
+                "/desktops/%s/action" % self._desktop.desktop_id,
+                json={
+                    "os-stop": None
+                }
+            )
+            self.assertEquals("done", result)
+
+
+class TestDesktopEdit(TestDesktop):
+    def setUp(self):
+        super(TestDesktopEdit, self).setUp()
+        self.cmd = desktop.EditDesktop(self.app, None)
+
+    @mock.patch.object(desktop_mgr.DesktopManager, "_update_all")
+    def test_stop_desktop(self, mocked):
+        args = ["desktop-id-1", "--computer-name", "computer02"]
+        verify_args = [
+            ("desktop_id", "desktop-id-1"),
+            ("computer_name", "computer02"),
+        ]
+        parsed_args = self.check_parser(self.cmd, args, verify_args)
+
+        with self.mocked_find:
+            mocked.return_value = base_resource.StrWithMeta("", "Request-ID")
+            result = self.cmd.take_action(parsed_args)
+            mocked.assert_called_once_with(
+                "/desktops/%s" % self._desktop.desktop_id,
+                json={
+                    "desktop": {
+                        "computer_name": "computer02"
+                    }
+                }
+            )
+            self.assertEquals("done", result)

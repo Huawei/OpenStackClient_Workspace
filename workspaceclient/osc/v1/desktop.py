@@ -150,7 +150,6 @@ class DeleteDesktop(command.Command):
 
 
 class EditDesktop(command.Command):
-    # TODO (woo) 404
     _description = _("Edit desktop meta properties")
 
     def get_parser(self, prog_name):
@@ -163,7 +162,7 @@ class EditDesktop(command.Command):
         client = self.app.client_manager.workspace
         desktop = client.desktops.find(args.desktop_id)
         client.desktops.edit(desktop.desktop_id, args.computer_name)
-        return args
+        return 'done'
 
 
 class ShowDesktop(command.ShowOne):

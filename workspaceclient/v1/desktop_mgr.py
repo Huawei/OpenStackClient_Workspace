@@ -45,9 +45,36 @@ class DesktopManager(manager.Manager):
                     "'%s' exists.") % keyword
         raise exceptions.NotFound(message)
 
-    def create(self, desktop_id):
+    def create(self, computer_name, user_name, user_email, product_id,
+               root_volume, image_id=None, security_groups=None, nics=None,
+               data_volumes=None):
         """create desktop"""
-        # TODO (Woo)
+        #TODO(WOO)
+        instance = {
+            "user_name": "Woo",
+            "user_email": "sokoban@foxmail.com",
+            "product_id": "workspace.c2.large.windows",
+            "image_id": "66b9760c-02f0-4e3f-9946-4315cf299dc5",
+            "computer_name": "WooTest",
+            "security_groups": [{
+                "id": "631e70c6-c788-4522-8a26-9ef0f98c546a"
+            }],
+            "root_volume": {
+                "type": "SATA",
+                "size": 80
+            },
+            "data_volumes": [{
+                "type": "SATA",
+                "size": 40
+            }],
+            # "nics": [{
+            #     "subnet_id": "c962adaa-55b2-42ef-8e40-fd812221a96d"
+            # }, {
+            #     "subnet_id": "ebb535f7-5730-496c-b26a-601ddfffd2fe",
+            #     "ip_address": "192.168.0.65"
+            # }]
+        }
+        self._create("/desktops", json=dict(desktops=[instance]), raw=True)
 
     def delete(self, desktop_id):
         """delete desktop"""
