@@ -1,0 +1,3 @@
+[report]
+include = workspaceclient/*
+omit = workspaceclient/tests/*
