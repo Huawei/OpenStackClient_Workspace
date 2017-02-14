@@ -29,11 +29,11 @@ class ListDesktop(command.Lister):
 
     def get_parser(self, prog_name):
         parser = super(ListDesktop, self).get_parser(prog_name)
-        pb.DesktopParser.add_status_option(parser)
-        pb.DesktopParser.add_desktop_ip_option(parser)
-        pb.DesktopParser.add_user_name_option(parser, False)
-        pb.DesktopParser.add_computer_name_option(parser)
-        pb.DesktopParser.add_marker_option(parser)
+        pb.Desktop.add_status_option(parser)
+        pb.Desktop.add_desktop_ip_option(parser)
+        pb.Desktop.add_user_name_option(parser, False)
+        pb.Desktop.add_computer_name_option(parser)
+        pb.Desktop.add_marker_option(parser)
         p.BaseParser.add_limit_option(parser)
         return parser
 
@@ -52,11 +52,11 @@ class ListDesktopDetail(command.Lister):
 
     def get_parser(self, prog_name):
         parser = super(ListDesktopDetail, self).get_parser(prog_name)
-        pb.DesktopParser.add_status_option(parser)
-        pb.DesktopParser.add_desktop_ip_option(parser)
-        pb.DesktopParser.add_user_name_option(parser)
-        pb.DesktopParser.add_computer_name_option(parser)
-        pb.DesktopParser.add_marker_option(parser)
+        pb.Desktop.add_status_option(parser)
+        pb.Desktop.add_desktop_ip_option(parser)
+        pb.Desktop.add_user_name_option(parser)
+        pb.Desktop.add_computer_name_option(parser)
+        pb.Desktop.add_marker_option(parser)
         p.BaseParser.add_limit_option(parser)
         return parser
 
@@ -78,8 +78,8 @@ class RebootDesktop(command.Command):
 
     def get_parser(self, prog_name):
         parser = super(RebootDesktop, self).get_parser(prog_name)
-        pb.DesktopParser.add_desktop_id_arg(parser, 'reboot')
-        pb.DesktopParser.add_hard_or_soft_arg(parser)
+        pb.Desktop.add_desktop_id_arg(parser, 'reboot')
+        pb.Desktop.add_hard_or_soft_arg(parser)
         return parser
 
     def take_action(self, args):
@@ -98,22 +98,22 @@ class CreateDesktop(command.Command):
         user_name_desc = _("Desktop Login UserName (character "
                            "[a-zA-Z0-9-_] allowed, start with alphabet, "
                            "length between 1-20)")
-        pb.DesktopParser.add_user_name_option(parser, True, user_name_desc)
-        pb.DesktopParser.add_user_mail_option(parser)
+        pb.Desktop.add_user_name_option(parser, True, user_name_desc)
+        pb.Desktop.add_user_mail_option(parser)
 
         computer_name_desc = _("Desktop Computer name (must be unique, "
                                "character [a-zA-Z0-9-_] allowed, start "
                                "with alphabet, length between 1-15)")
-        pb.DesktopParser.add_computer_name_option(
+        pb.Desktop.add_computer_name_option(
             parser, True, computer_name_desc
         )
 
-        pb.DesktopParser.add_product_id_option(parser)
-        pb.DesktopParser.add_image_id_option(parser)
-        pb.DesktopParser.add_root_volume_option(parser)
-        pb.DesktopParser.add_data_volume_option(parser)
-        pb.DesktopParser.add_security_group_option(parser)
-        pb.DesktopParser.add_nic_option(parser)
+        pb.Desktop.add_product_id_option(parser)
+        pb.Desktop.add_image_id_option(parser)
+        pb.Desktop.add_root_volume_option(parser)
+        pb.Desktop.add_data_volume_option(parser)
+        pb.Desktop.add_security_group_option(parser)
+        pb.Desktop.add_nic_option(parser)
         return parser
 
     def take_action(self, args):
@@ -136,7 +136,7 @@ class StartDesktop(command.Command):
 
     def get_parser(self, prog_name):
         parser = super(StartDesktop, self).get_parser(prog_name)
-        pb.DesktopParser.add_desktop_id_arg(parser, 'start')
+        pb.Desktop.add_desktop_id_arg(parser, 'start')
         return parser
 
     def take_action(self, args):
@@ -151,7 +151,7 @@ class StopDesktop(command.Command):
 
     def get_parser(self, prog_name):
         parser = super(StopDesktop, self).get_parser(prog_name)
-        pb.DesktopParser.add_desktop_id_arg(parser, 'stop')
+        pb.Desktop.add_desktop_id_arg(parser, 'stop')
         return parser
 
     def take_action(self, args):
@@ -166,7 +166,7 @@ class DeleteDesktop(command.Command):
 
     def get_parser(self, prog_name):
         parser = super(DeleteDesktop, self).get_parser(prog_name)
-        pb.DesktopParser.add_desktop_id_arg(parser, 'delete')
+        pb.Desktop.add_desktop_id_arg(parser, 'delete')
         return parser
 
     def take_action(self, args):
@@ -181,11 +181,11 @@ class EditDesktop(command.Command):
 
     def get_parser(self, prog_name):
         parser = super(EditDesktop, self).get_parser(prog_name)
-        pb.DesktopParser.add_desktop_id_arg(parser, 'edit')
+        pb.Desktop.add_desktop_id_arg(parser, 'edit')
         computer_name_desc = _("Desktop Computer name (must be unique, "
                                "character [a-zA-Z0-9-_] allowed, start "
                                "with alphabet, length between 1-15)")
-        pb.DesktopParser.add_computer_name_option(
+        pb.Desktop.add_computer_name_option(
             parser, True, computer_name_desc
         )
         return parser
@@ -202,7 +202,7 @@ class ShowDesktop(command.ShowOne):
 
     def get_parser(self, prog_name):
         parser = super(ShowDesktop, self).get_parser(prog_name)
-        pb.DesktopParser.add_desktop_id_arg(parser, 'show')
+        pb.Desktop.add_desktop_id_arg(parser, 'show')
         return parser
 
     def take_action(self, args):

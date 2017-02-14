@@ -15,7 +15,6 @@
 import logging
 
 from osc_lib import utils as formatter
-
 from workspaceclient.common import display
 from workspaceclient.common import resource
 
@@ -71,12 +70,24 @@ class Desktop(resource.Resource, display.Display):
 class Workspace(resource.Resource, display.Display):
     """workspace desktop user resource instance"""
 
-    list_column_names = [
-        "Product ID",
-        "Flavor ID",
-        "Type",
-        "Descriptions"
+    show_column_names = [
+        "AD Domains",
+        "VPC ID",
+        "VPC Name",
+        "Dedicated access address",
+        "Internet access address",
+        "access_mode",
+        "Subnets",
     ]
+
+    column_2_property = {
+        "Subnets" : "subnet_ids"
+    }
+
+    formatter = {
+        "AD Domains": formatter.format_dict,
+        "Subnets": formatter.format_list_of_dicts,
+    }
 
 
 class Product(resource.Resource, display.Display):

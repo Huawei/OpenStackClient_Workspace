@@ -16,7 +16,7 @@ from workspaceclient.common import parsetypes
 from workspaceclient.common.i18n import _
 
 
-class DesktopParser(object):
+class Desktop(object):
     @staticmethod
     def add_desktop_id_arg(parser, op):
         parser.add_argument(
@@ -170,7 +170,11 @@ class DesktopParser(object):
         )
 
 
-class PolicyParser(object):
+class Workspace(object):
+    pass
+
+
+class Policy(object):
     @staticmethod
     def add_switch_arg(parser, name, required=False):
         group = parser.add_mutually_exclusive_group(required=required)
@@ -285,7 +289,7 @@ class PolicyParser(object):
         )
 
 
-class DesktopUserParser(object):
+class DesktopUser(object):
     @staticmethod
     def add_username_option(parser):
         parser.add_argument(
