@@ -48,7 +48,8 @@ class ShowWorkspace(command.ShowOne):
         client = self.app.client_manager.workspace
         workspace = client.workspaces.get()
         columns = resource.Workspace.show_column_names
-        outputs = workspace.get_display_data(columns)
+        formatter = resource.Workspace.formatter
+        outputs = workspace.get_display_data(columns, formatter=formatter)
         return columns, outputs
 
 
@@ -57,7 +58,6 @@ class EditWorkspace(command.Command):
 
     def get_parser(self, prog_name):
         parser = super(ShowWorkspace, self).get_parser(prog_name)
-
         return parser
 
     def take_action(self, args):
