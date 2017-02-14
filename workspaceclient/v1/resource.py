@@ -86,7 +86,7 @@ class Workspace(resource.Resource, display.Display):
 
     formatter = {
         "AD Domains": formatter.format_dict,
-        "Subnets": formatter.format_list_of_dicts,
+        "subnet_ids": formatter.format_list_of_dicts,
     }
 
 
@@ -253,7 +253,7 @@ class DesktopUser(resource.Resource, display.Display):
 
     column_2_property = {
         "Name": "user_name",
-        "Email": "user_type",
+        "Email": "user_email",
     }
 
     @property

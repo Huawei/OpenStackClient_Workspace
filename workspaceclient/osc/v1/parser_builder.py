@@ -171,7 +171,120 @@ class Desktop(object):
 
 
 class Workspace(object):
-    pass
+
+    @staticmethod
+    def add_domain_type_option(parser):
+        parser.add_argument(
+            "--domain-type",
+            choices=["LITE_AD", "LOCAL_AD"],
+            required=True,
+            help=_("When LOCAL_AD, make sure LOCAL AD network and "
+                   "VPC network can access each other"),
+        )
+
+    @staticmethod
+    def add_domain_name_option(parser):
+        parser.add_argument(
+            "--domain-name",
+            metavar="<domain-name>",
+            required=True,
+            help=_("When domain type is LOCAL_AD, domain-name should be an "
+                   "exists domain with max 255 length. when domain type is "
+                   "LITE AD, domain-name can only contains character, digit, "
+                   "- and ."),
+        )
+
+    @staticmethod
+    def add_domain_admin_account_option(parser):
+        parser.add_argument(
+            "--domain-admin-account",
+            metavar="<account>",
+            required=True,
+            help=_("When domain type is LOCAL_AD, domain-admin-account "
+                   "should be an exists admin account of LOCAL AD;"
+                   "when domain type is LITE AD, domain-admin-account "
+                   "should follow [a-zA-Z0-9-_] and start with character"),
+        )
+
+    @staticmethod
+    def add_domain_password_option(parser):
+        parser.add_argument(
+            "--domain-password",
+            metavar="<password>",
+            required=True,
+            help=_("When domain type is LOCAL_AD, domain-password should be"
+                   " same with password of domain-admin-account;"
+                   "when domain type is LITE AD, domain-admin-account "
+                   "should follow [a-zA-Z0-9-_] and start with character with"
+                   "a length [8-64]"),
+        )
+
+    @staticmethod
+    def add_active_domain_ip_option(parser):
+        parser.add_argument(
+            "--active-domain-ip",
+            metavar="<IP>",
+            required=False,
+            help=_("Required when domain type is LOCAL_AD"),
+        )
+
+    @staticmethod
+    def add_active_dns_ip_option(parser):
+        parser.add_argument(
+            "--active-dns-ip",
+            metavar="<IP>",
+            required=False,
+            help=_("Required when domain type is LOCAL_AD"),
+        )
+
+    @staticmethod
+    def add_standby_domain_ip_option(parser):
+        parser.add_argument(
+            "--standby-domain-ip",
+            metavar="<IP>",
+            required=False,
+            help=_("Optional when domain type is LOCAL_AD"),
+        )
+
+    @staticmethod
+    def add_standby_dns_ip_option(parser):
+        parser.add_argument(
+            "--standby-dns-ip",
+            metavar="<IP>",
+            required=False,
+            help=_("Optional when domain type is LOCAL_AD"),
+        )
+
+    @staticmethod
+    def add_vpc_option(parser):
+        parser.add_argument(
+            "--vpc",
+            metavar="<vpc>",
+            required=True,
+            help=_("vpc to assign to workspace (UUID or Name)"),
+        )
+
+    @staticmethod
+    def add_subnets_option(parser):
+        parser.add_argument(
+            "--subnet",
+            metavar="<subnet>",
+            required=True,
+            default=[],
+            action='append',
+            dest="subnets",
+            help=_("subnet to assign to workspace (UUID or Name). "
+                   "(Repeat option to set multiple subnet)"),
+        )
+
+    @staticmethod
+    def add_access_mode_option(parser):
+        parser.add_argument(
+            "--access-mode",
+            required=True,
+            choices=["INTERNET", "DEDICATED", "BOTH"],
+            help=_("Access mode to connect to workspace"),
+        )
 
 
 class Policy(object):

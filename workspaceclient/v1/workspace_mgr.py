@@ -12,12 +12,8 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 #
-from keystoneauth1 import exceptions
 
-from workspaceclient.common import exceptions as execs
 from workspaceclient.common import manager
-from workspaceclient.common import utils
-from workspaceclient.common.i18n import _
 from workspaceclient.v1 import resource
 
 
@@ -26,27 +22,47 @@ class WorkspaceManager(manager.Manager):
 
     resource_class = resource.Workspace
 
-    def create(self):
-        """create a new workspace"""
-        {
-            "ad_domains": {
-                "domain_type": "LITE_AD",
-                "domain_name": "testapi.litead.com",
-                "domain_admin_account": "vdsadmin",
-                "domain_password": "Testabc!23"
-            },
-            "vpc_id": "e8f985fa-5161-4cb8-bf5a-155058ea58c9",
-            "subnet_ids": [
-                {
-                    "subnet_id": "067b30a9-1b73-4804-a808-699c5f6c4e09"
-                },
-                {
-                    "subnet_id": "47c39964-4a32-4fb9-acc8-fac4355848d0"
-                }
-            ],
-            "access_mode": "INTERNET"
+    def enable(self, domain_type, domain_name, domain_admin_account,
+               domain_password, vpc_id, subnet_ids, access_mode,
+               active_domain_ip=None, active_dns_ip=None,
+               standby_domain_ip=None, standby_dns_ip=None):
+        """enable workspace service
+
+        :param domain_type:
+        :param domain_name:
+        :param domain_admin_account:
+        :param domain_password:
+        :param vpc_id:
+        :param subnet_ids: [subnet-id-1, subnet-id-2]
+        :param access_mode:
+        :param active_domain_ip:
+        :param active_dns_ip:
+        :param standby_domain_ip:
+        :param standby_dns_ip:
+        :return:
+        """
+        ad = {
+            "domain_type": domain_type,
+            "domain_name": domain_name,
+            "domain_admin_account": domain_admin_account,
+            "domain_password": domain_password
         }
-        self._create("/workspaces")
+
+        if domain_type == 'LOCAL_AD':
+            ad["active_domain_ip"] = active_domain_ip
+            ad["active_dns_ip"] = active_dns_ip
+            if standby_domain_ip:
+                ad["standby_domain_ip"] = standby_domain_ip
+            if standby_dns_ip:
+                ad["standby_dns_ip"] = standby_dns_ip
+
+        json = {
+            "ad_domains": ad,
+            "vpc_id": vpc_id,
+            "subnet_ids": [dict(subnet_id=sid) for sid in subnet_ids],
+            "access_mode": access_mode
+        }
+        return self._create("/workspaces", json=json, raw=True)
 
     def edit(self):
         self._update_all("/workspaces")
@@ -55,7 +71,7 @@ class WorkspaceManager(manager.Manager):
         """get workspace detail"""
         return self._get("/workspaces")
 
-    def delete(self):
+    def disable(self):
         """delete workspace
 
         this is a asynchronous task

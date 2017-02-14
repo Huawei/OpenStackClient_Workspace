@@ -22,7 +22,6 @@ from workspaceclient.v1 import resource
 
 
 class TestPolicy(base.WorkspaceV1BaseTestCase):
-    """"""
 
     instance = {
         "usb_port_redirection": {
@@ -204,6 +203,7 @@ class TestPolicyEdit(TestPolicy):
         mocked_put.assert_called_once_with(
             "/policies", json=json
         )
+        self.assertEqual('done', result)
 
     @mock.patch.object(policy_mgr.PolicyManager, "_update_all")
     def test_disable_redirection_options(self, mocked_put):
@@ -252,7 +252,6 @@ class TestPolicyEdit(TestPolicy):
 
         mocked_put.return_value = base_resource.StrWithMeta("", "Request-Id")
         result = self.cmd.take_action(parsed_args)
-
         json = {
             "policies": {
                 "usb_port_redirection": {
@@ -270,3 +269,47 @@ class TestPolicyEdit(TestPolicy):
         mocked_put.assert_called_once_with(
             "/policies", json=json
         )
+        self.assertEqual('done', result)
+
+    @mock.patch.object(policy_mgr.PolicyManager, "_update_all")
+    def test_hdp_plus_disable(self, mocked_put):
+        args = [
+            "--disable-hdp-plus",
+            "--display-level", "QUALITY_FIRST",
+            "--bandwidth", "24315",
+            "--frame-rate", "18",
+            "--video-frame-rate", "20",
+            "--smoothing-factor", "58",
+            "--lossy-compression-quality", "88"
+        ]
+        verify_args = [
+            ("enable_hdp_plus", False),
+            ("display_level", "QUALITY_FIRST"),
+            ("bandwidth", 24315),
+            ("frame_rate", 18),
+            ("video_frame_rate", 20),
+            ("smoothing_factor", 58),
+            ("lossy_compression_quality", 88),
+        ]
+        parsed_args = self.check_parser(self.cmd, args, verify_args)
+
+        mocked_put.return_value = base_resource.StrWithMeta("", "Request-Id")
+        result = self.cmd.take_action(parsed_args)
+        json = {
+            "policies": {
+                "hdp_plus": {
+                    "hdp_plus_enable": False,
+                    "display_level": "QUALITY_FIRST",
+                    "options": {
+                        "bandwidth": 24315,
+                        "frame_rate": 18,
+                        "video_frame_rate": 20,
+                        "smoothing_factor": 58,
+                    }
+                }
+            }
+        }
+        mocked_put.assert_called_once_with(
+            "/policies", json=json
+        )
+        self.assertEqual('done', result)
