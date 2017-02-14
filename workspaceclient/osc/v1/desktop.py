@@ -13,10 +13,9 @@
 #   under the License.
 #
 import logging
+
 import six
-
 from osc_lib.command import command
-
 from workspaceclient.common import parser_builder as p
 from workspaceclient.common.i18n import _
 from workspaceclient.osc.v1 import parser_builder as pb
@@ -32,7 +31,7 @@ class ListDesktop(command.Lister):
         parser = super(ListDesktop, self).get_parser(prog_name)
         pb.DesktopParser.add_status_option(parser)
         pb.DesktopParser.add_desktop_ip_option(parser)
-        pb.DesktopParser.add_user_name_option(parser)
+        pb.DesktopParser.add_user_name_option(parser, False)
         pb.DesktopParser.add_computer_name_option(parser)
         pb.DesktopParser.add_marker_option(parser)
         p.BaseParser.add_limit_option(parser)
@@ -95,12 +94,40 @@ class CreateDesktop(command.Command):
 
     def get_parser(self, prog_name):
         parser = super(CreateDesktop, self).get_parser(prog_name)
-        pb.DesktopParser.add_desktop_id_arg(parser, 'create')
-        pb.DesktopParser.add_hard_or_soft_arg(parser)
+
+        user_name_desc = _("Desktop Login UserName (character "
+                           "[a-zA-Z0-9-_] allowed, start with alphabet, "
+                           "length between 1-20)")
+        pb.DesktopParser.add_user_name_option(parser, True, user_name_desc)
+        pb.DesktopParser.add_user_mail_option(parser)
+
+        computer_name_desc = _("Desktop Computer name (must be unique, "
+                               "character [a-zA-Z0-9-_] allowed, start "
+                               "with alphabet, length between 1-15)")
+        pb.DesktopParser.add_computer_name_option(
+            parser, True, computer_name_desc
+        )
+
+        pb.DesktopParser.add_product_id_option(parser)
+        pb.DesktopParser.add_image_id_option(parser)
+        pb.DesktopParser.add_root_volume_option(parser)
+        pb.DesktopParser.add_data_volume_option(parser)
+        pb.DesktopParser.add_security_group_option(parser)
+        pb.DesktopParser.add_nic_option(parser)
         return parser
 
     def take_action(self, args):
-        client = self.app.client_manager.workspace
+        desktops = self.app.client_manager.workspace.desktops
+        network = self.app.client_manager.network
+        security_groups = [dict(id=network.find_security_group(sg).id)
+                           for sg in args.security_groups]
+        for nic in args.nics:
+            subnet = network.find_subnet(nic["subnet_id"])
+            nic["subnet_id"] = subnet.id
+        desktops.create(args.computer_name, args.user_name, args.user_email,
+                        args.product_id, args.root_volume,
+                        data_volumes=args.data_volumes, image_id=args.image_id,
+                        security_groups=security_groups, nics=args.nics)
         return args
 
 
@@ -155,7 +182,12 @@ class EditDesktop(command.Command):
     def get_parser(self, prog_name):
         parser = super(EditDesktop, self).get_parser(prog_name)
         pb.DesktopParser.add_desktop_id_arg(parser, 'edit')
-        pb.DesktopParser.add_edit_computer_name_option(parser, True)
+        computer_name_desc = _("Desktop Computer name (must be unique, "
+                               "character [a-zA-Z0-9-_] allowed, start "
+                               "with alphabet, length between 1-15)")
+        pb.DesktopParser.add_computer_name_option(
+            parser, True, computer_name_desc
+        )
         return parser
 
     def take_action(self, args):

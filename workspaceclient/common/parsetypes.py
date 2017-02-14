@@ -13,6 +13,7 @@
 #   under the License.
 #
 import argparse
+import string
 from datetime import datetime
 
 from osc_lib.i18n import _
@@ -51,3 +52,41 @@ def int_range_type(from_, to):
         return int_user_input
 
     return wrapped
+
+
+def volume_type(user_input=''):
+    try:
+        volume = user_input.split(':', 1)
+        if len(volume) != 2:
+            raise ValueError
+        _volume_type = string.upper(volume[0])
+        volume_size = int(volume[1])
+        if _volume_type != 'SSD' and _volume_type != 'SATA':
+            raise ValueError
+        return dict(type=_volume_type, size=volume_size)
+    except ValueError:
+        msg = _("%s is not a valid volume format") % user_input
+        raise argparse.ArgumentTypeError(msg)
+
+
+# noinspection PyTypeChecker
+def subnet_type(user_input=''):
+    try:
+        kv = {}
+        for kv_str in user_input.split(","):
+            split = kv_str.split("=", 1)
+            kv[split[0]] = split[1]
+
+        subnet = {}
+        if "subnet" in kv:
+            subnet["subnet_id"] = kv["subnet"]
+        else:
+            raise ValueError
+
+        if "ip" in kv:
+            subnet["ip_address"] = kv["ip"]
+
+        return subnet
+    except ValueError as e:
+        msg = _("%s is not a valid NIC") % user_input
+        raise argparse.ArgumentTypeError(msg)

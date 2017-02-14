@@ -13,12 +13,12 @@
 #   under the License.
 #
 import random
-import mock
 
+import mock
 from keystoneclient import exceptions
 
-from workspaceclient.common import resource as base_resource
 from workspaceclient.common import exceptions as execs
+from workspaceclient.common import resource as base_resource
 from workspaceclient.osc.v1 import desktop
 from workspaceclient.tests import base
 from workspaceclient.v1 import desktop_mgr
@@ -165,6 +165,42 @@ class TestDesktop(base.WorkspaceV1BaseTestCase):
         self.mocked_find = mock.patch.object(
             desktop_mgr.DesktopManager, "find", return_value=self._desktop
         )
+
+
+class TestDesktopCreate(TestDesktop):
+    def setUp(self):
+        super(TestDesktopCreate, self).setUp()
+        self.cmd = desktop.CreateDesktop(self.app, None)
+
+    def test_args_input(self):
+        args = [
+            "--user-name", "username01",
+            "--user-email", "test@test.com",
+            "--computer-name", "computer01",
+            "--product-id", "workspace.c2.2xlarge.windows",
+            "--image-id", "image-id",
+            "--root-volume", "SATA:120",
+            "--data-volume", "SATA:120",
+            "--data-volume", "SSD:120",
+            "--security-group", "sg01",
+            "--security-group", "sg02",
+            "--nic", "subnet=subnet01,ip=10.1.1.1",
+            "--nic", "subnet=subnet02",
+        ]
+        verify_args = [
+            ("user_name", "username01"),
+            ("user_email", "test@test.com"),
+            ("computer_name", "computer01"),
+            ("product_id", "workspace.c2.2xlarge.windows"),
+            ("image_id", "image-id"),
+            ("root_volume", dict(type="SATA", size=120)),
+            ("data_volumes", [dict(type="SATA", size=120),
+                              dict(type="SSD", size=120)]),
+            ("security_groups", ["sg01", "sg02"]),
+            ("nics", [dict(subnet_id="subnet01", ip_address="10.1.1.1"),
+                      dict(subnet_id="subnet02")]),
+        ]
+        parsed_args = self.check_parser(self.cmd, args, verify_args)
 
 
 class TestDesktopShow(TestDesktop):
