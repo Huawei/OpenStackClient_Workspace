@@ -16,8 +16,7 @@ from workspaceclient.common import parsetypes
 from workspaceclient.common.i18n import _
 
 
-class DesktopParser(object):
-
+class Desktop(object):
     @staticmethod
     def add_desktop_id_arg(parser, op):
         parser.add_argument(
@@ -61,20 +60,25 @@ class DesktopParser(object):
         )
 
     @staticmethod
-    def add_user_name_option(parser):
+    def add_user_name_option(parser, required=False, help_text=None):
+        default_help_text = _("list desktop with the user name")
+        help_text = help_text if help_text else default_help_text
         parser.add_argument(
             "--user-name",
             metavar="<user-name>",
-            help=_("list desktop with the user name")
+            required=required,
+            help=help_text,
         )
 
     @staticmethod
-    def add_computer_name_option(parser, required=False):
+    def add_computer_name_option(parser, required=False, help_text=None):
+        default_help_text = _("list desktop with the user name")
+        help_text = help_text if help_text else default_help_text
         parser.add_argument(
             "--computer-name",
             metavar="<computer-name>",
             required=required,
-            help=_("list desktop with the computer name")
+            help=help_text,
         )
 
     @staticmethod
@@ -86,18 +90,204 @@ class DesktopParser(object):
         )
 
     @staticmethod
-    def add_edit_computer_name_option(parser, required=True):
+    def add_user_mail_option(parser):
         parser.add_argument(
-            "--computer-name",
-            metavar="<computer-name>",
-            required=required,
-            help=_("Change computer name to (must be unique, "
-                   "[a-zA-Z0-9-_] allowed, start with [a-zA-Z])")
+            "--user-email",
+            metavar="<email>",
+            required=True,
+            help=_("User Mail to receive notification when desktop created"),
+        )
+
+    @staticmethod
+    def add_product_id_option(parser):
+        parser.add_argument(
+            "--product-id",
+            metavar="<product-id>",
+            required=True,
+            help=_("desktop product id"),
+        )
+
+    @staticmethod
+    def add_image_id_option(parser):
+        parser.add_argument(
+            "--image-id",
+            metavar="<image-id>",
+            required=False,
+            help=_("desktop customer image id"),
+        )
+
+    @staticmethod
+    def add_root_volume_option(parser):
+        parser.add_argument(
+            "--root-volume",
+            metavar="<volume-type:volume-size>",
+            required=True,
+            type=parsetypes.volume_type,
+            help=_("Desktop Root Volume, volume type [SSD|SATA], "
+                   "volume size unit is GB (example: SSD:80)"),
+        )
+
+    @staticmethod
+    def add_data_volume_option(parser):
+        parser.add_argument(
+            "--data-volume",
+            metavar="<volume-type:volume-size>",
+            required=False,
+            default=[],
+            type=parsetypes.volume_type,
+            dest="data_volumes",
+            action='append',
+            help=_("Desktop data Volume, volume type [SSD|SATA], "
+                   "volume size unit is GB (example: SSD:80). "
+                   "(Repeat option to set multiple data volumes.)"),
+        )
+
+    @staticmethod
+    def add_security_group_option(parser):
+        parser.add_argument(
+            "--security-group",
+            metavar="<security-group>",
+            required=False,
+            default=[],
+            dest="security_groups",
+            action='append',
+            help=_('Security group to assign to this desktop (name or ID) '
+                   '(repeat option to set multiple security groups)'),
+        )
+
+    @staticmethod
+    def add_nic_option(parser):
+        parser.add_argument(
+            "--nic",
+            metavar="<subnet=subnet-uuid,ip=ip-address>",
+            required=False,
+            default=[],
+            action='append',
+            dest="nics",
+            type=parsetypes.subnet_type,
+            help=_("NIC to assign to this desktop. subnet is required, "
+                   "ip is optional. (Repeat option to set multiple NIC)"),
         )
 
 
-class PolicyParser(object):
+class Workspace(object):
 
+    @staticmethod
+    def add_domain_type_option(parser):
+        parser.add_argument(
+            "--domain-type",
+            choices=["LITE_AD", "LOCAL_AD"],
+            required=True,
+            help=_("When LOCAL_AD, make sure LOCAL AD network and "
+                   "VPC network can access each other"),
+        )
+
+    @staticmethod
+    def add_domain_name_option(parser):
+        parser.add_argument(
+            "--domain-name",
+            metavar="<domain-name>",
+            required=True,
+            help=_("When domain type is LOCAL_AD, domain-name should be an "
+                   "exists domain with max 255 length. when domain type is "
+                   "LITE AD, domain-name can only contains character, digit, "
+                   "- and ."),
+        )
+
+    @staticmethod
+    def add_domain_admin_account_option(parser):
+        parser.add_argument(
+            "--domain-admin-account",
+            metavar="<account>",
+            required=True,
+            help=_("When domain type is LOCAL_AD, domain-admin-account "
+                   "should be an exists admin account of LOCAL AD;"
+                   "when domain type is LITE AD, domain-admin-account "
+                   "should follow [a-zA-Z0-9-_] and start with character"),
+        )
+
+    @staticmethod
+    def add_domain_password_option(parser):
+        parser.add_argument(
+            "--domain-password",
+            metavar="<password>",
+            required=True,
+            help=_("When domain type is LOCAL_AD, domain-password should be"
+                   " same with password of domain-admin-account;"
+                   "when domain type is LITE AD, domain-admin-account "
+                   "should follow [a-zA-Z0-9-_] and start with character with"
+                   "a length [8-64]"),
+        )
+
+    @staticmethod
+    def add_active_domain_ip_option(parser):
+        parser.add_argument(
+            "--active-domain-ip",
+            metavar="<IP>",
+            required=False,
+            help=_("Required when domain type is LOCAL_AD"),
+        )
+
+    @staticmethod
+    def add_active_dns_ip_option(parser):
+        parser.add_argument(
+            "--active-dns-ip",
+            metavar="<IP>",
+            required=False,
+            help=_("Required when domain type is LOCAL_AD"),
+        )
+
+    @staticmethod
+    def add_standby_domain_ip_option(parser):
+        parser.add_argument(
+            "--standby-domain-ip",
+            metavar="<IP>",
+            required=False,
+            help=_("Optional when domain type is LOCAL_AD"),
+        )
+
+    @staticmethod
+    def add_standby_dns_ip_option(parser):
+        parser.add_argument(
+            "--standby-dns-ip",
+            metavar="<IP>",
+            required=False,
+            help=_("Optional when domain type is LOCAL_AD"),
+        )
+
+    @staticmethod
+    def add_vpc_option(parser):
+        parser.add_argument(
+            "--vpc",
+            metavar="<vpc>",
+            required=True,
+            help=_("vpc to assign to workspace (UUID or Name)"),
+        )
+
+    @staticmethod
+    def add_subnets_option(parser):
+        parser.add_argument(
+            "--subnet",
+            metavar="<subnet>",
+            required=True,
+            default=[],
+            action='append',
+            dest="subnets",
+            help=_("subnet to assign to workspace (UUID or Name). "
+                   "(Repeat option to set multiple subnet)"),
+        )
+
+    @staticmethod
+    def add_access_mode_option(parser):
+        parser.add_argument(
+            "--access-mode",
+            required=True,
+            choices=["INTERNET", "DEDICATED", "BOTH"],
+            help=_("Access mode to connect to workspace"),
+        )
+
+
+class Policy(object):
     @staticmethod
     def add_switch_arg(parser, name, required=False):
         group = parser.add_mutually_exclusive_group(required=required)
@@ -212,8 +402,7 @@ class PolicyParser(object):
         )
 
 
-class DesktopUserParser(object):
-
+class DesktopUser(object):
     @staticmethod
     def add_username_option(parser):
         parser.add_argument(

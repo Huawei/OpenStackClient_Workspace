@@ -13,8 +13,8 @@
 #   under the License.
 #
 import logging
-import six
 
+import six
 from osc_lib.command import command
 
 from workspaceclient.common import parser_builder as p
@@ -30,11 +30,11 @@ class ListDesktop(command.Lister):
 
     def get_parser(self, prog_name):
         parser = super(ListDesktop, self).get_parser(prog_name)
-        pb.DesktopParser.add_status_option(parser)
-        pb.DesktopParser.add_desktop_ip_option(parser)
-        pb.DesktopParser.add_user_name_option(parser)
-        pb.DesktopParser.add_computer_name_option(parser)
-        pb.DesktopParser.add_marker_option(parser)
+        pb.Desktop.add_status_option(parser)
+        pb.Desktop.add_desktop_ip_option(parser)
+        pb.Desktop.add_user_name_option(parser, False)
+        pb.Desktop.add_computer_name_option(parser)
+        pb.Desktop.add_marker_option(parser)
         p.BaseParser.add_limit_option(parser)
         return parser
 
@@ -53,11 +53,11 @@ class ListDesktopDetail(command.Lister):
 
     def get_parser(self, prog_name):
         parser = super(ListDesktopDetail, self).get_parser(prog_name)
-        pb.DesktopParser.add_status_option(parser)
-        pb.DesktopParser.add_desktop_ip_option(parser)
-        pb.DesktopParser.add_user_name_option(parser)
-        pb.DesktopParser.add_computer_name_option(parser)
-        pb.DesktopParser.add_marker_option(parser)
+        pb.Desktop.add_status_option(parser)
+        pb.Desktop.add_desktop_ip_option(parser)
+        pb.Desktop.add_user_name_option(parser)
+        pb.Desktop.add_computer_name_option(parser)
+        pb.Desktop.add_marker_option(parser)
         p.BaseParser.add_limit_option(parser)
         return parser
 
@@ -79,8 +79,8 @@ class RebootDesktop(command.Command):
 
     def get_parser(self, prog_name):
         parser = super(RebootDesktop, self).get_parser(prog_name)
-        pb.DesktopParser.add_desktop_id_arg(parser, 'reboot')
-        pb.DesktopParser.add_hard_or_soft_arg(parser)
+        pb.Desktop.add_desktop_id_arg(parser, 'reboot')
+        pb.Desktop.add_hard_or_soft_arg(parser)
         return parser
 
     def take_action(self, args):
@@ -95,13 +95,42 @@ class CreateDesktop(command.Command):
 
     def get_parser(self, prog_name):
         parser = super(CreateDesktop, self).get_parser(prog_name)
-        pb.DesktopParser.add_desktop_id_arg(parser, 'create')
-        pb.DesktopParser.add_hard_or_soft_arg(parser)
+
+        user_name_desc = _("Desktop Login UserName (character "
+                           "[a-zA-Z0-9-_] allowed, start with alphabet, "
+                           "length between 1-20)")
+        pb.Desktop.add_user_name_option(parser, True, user_name_desc)
+        pb.Desktop.add_user_mail_option(parser)
+
+        computer_name_desc = _("Desktop Computer name (must be unique, "
+                               "character [a-zA-Z0-9-_] allowed, start "
+                               "with alphabet, length between 1-15)")
+        pb.Desktop.add_computer_name_option(
+            parser, True, computer_name_desc
+        )
+
+        pb.Desktop.add_product_id_option(parser)
+        pb.Desktop.add_image_id_option(parser)
+        pb.Desktop.add_root_volume_option(parser)
+        pb.Desktop.add_data_volume_option(parser)
+        pb.Desktop.add_security_group_option(parser)
+        pb.Desktop.add_nic_option(parser)
         return parser
 
     def take_action(self, args):
-        client = self.app.client_manager.workspace
-        return args
+        desktops = self.app.client_manager.workspace.desktops
+        network = self.app.client_manager.network
+        security_groups = [dict(id=network.find_security_group(sg).id)
+                           for sg in args.security_groups]
+        for nic in args.nics:
+            subnet = network.find_subnet(nic["subnet_id"])
+            nic["subnet_id"] = subnet.id
+        job = desktops.create(args.computer_name, args.user_name,
+                              args.user_email, args.product_id,
+                              args.root_volume, data_volumes=args.data_volumes,
+                              image_id=args.image_id,
+                              security_groups=security_groups, nics=args.nics)
+        return 'Request Received, job id: ' + job["job_id"]
 
 
 class StartDesktop(command.Command):
@@ -109,7 +138,7 @@ class StartDesktop(command.Command):
 
     def get_parser(self, prog_name):
         parser = super(StartDesktop, self).get_parser(prog_name)
-        pb.DesktopParser.add_desktop_id_arg(parser, 'start')
+        pb.Desktop.add_desktop_id_arg(parser, 'start')
         return parser
 
     def take_action(self, args):
@@ -124,7 +153,7 @@ class StopDesktop(command.Command):
 
     def get_parser(self, prog_name):
         parser = super(StopDesktop, self).get_parser(prog_name)
-        pb.DesktopParser.add_desktop_id_arg(parser, 'stop')
+        pb.Desktop.add_desktop_id_arg(parser, 'stop')
         return parser
 
     def take_action(self, args):
@@ -139,7 +168,7 @@ class DeleteDesktop(command.Command):
 
     def get_parser(self, prog_name):
         parser = super(DeleteDesktop, self).get_parser(prog_name)
-        pb.DesktopParser.add_desktop_id_arg(parser, 'delete')
+        pb.Desktop.add_desktop_id_arg(parser, 'delete')
         return parser
 
     def take_action(self, args):
@@ -154,8 +183,13 @@ class EditDesktop(command.Command):
 
     def get_parser(self, prog_name):
         parser = super(EditDesktop, self).get_parser(prog_name)
-        pb.DesktopParser.add_desktop_id_arg(parser, 'edit')
-        pb.DesktopParser.add_edit_computer_name_option(parser, True)
+        pb.Desktop.add_desktop_id_arg(parser, 'edit')
+        computer_name_desc = _("Desktop Computer name (must be unique, "
+                               "character [a-zA-Z0-9-_] allowed, start "
+                               "with alphabet, length between 1-15)")
+        pb.Desktop.add_computer_name_option(
+            parser, True, computer_name_desc
+        )
         return parser
 
     def take_action(self, args):
@@ -170,7 +204,7 @@ class ShowDesktop(command.ShowOne):
 
     def get_parser(self, prog_name):
         parser = super(ShowDesktop, self).get_parser(prog_name)
-        pb.DesktopParser.add_desktop_id_arg(parser, 'show')
+        pb.Desktop.add_desktop_id_arg(parser, 'show')
         return parser
 
     def take_action(self, args):

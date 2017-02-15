@@ -34,6 +34,4 @@ class WorkspaceV1BaseTestCase(BaseTestCase):
         super(WorkspaceV1BaseTestCase, self).setUp()
         fake_workspace_client = fakes.FakeWorkspaceV1Client()
         self.app.client_manager.workspace = fake_workspace_client
-        self.app.client_manager.compute = mock.Mock(
-            security_gourps=mock.Mock()
-        )
+        self.app.client_manager.network = mock.Mock()

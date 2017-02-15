@@ -26,7 +26,7 @@ class TestHTTPExceptions(base.BaseTestCase):
         mock_resp.status_code = 413
         mock_resp.json.return_value = {
             'error_code': '413',
-            'error_description': 'Request Entity Too Large',
+            'error_msg': 'Request Entity Too Large',
         }
         mock_resp.headers = {
             'Content-Type': 'application/json',

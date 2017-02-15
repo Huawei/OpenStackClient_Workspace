@@ -13,12 +13,12 @@
 #   under the License.
 #
 import random
-import mock
 
+import mock
 from keystoneclient import exceptions
 
-from workspaceclient.common import resource as base_resource
 from workspaceclient.common import exceptions as execs
+from workspaceclient.common import resource as base_resource
 from workspaceclient.osc.v1 import desktop
 from workspaceclient.tests import base
 from workspaceclient.v1 import desktop_mgr
@@ -165,6 +165,76 @@ class TestDesktop(base.WorkspaceV1BaseTestCase):
         self.mocked_find = mock.patch.object(
             desktop_mgr.DesktopManager, "find", return_value=self._desktop
         )
+
+
+class TestDesktopCreate(TestDesktop):
+    def setUp(self):
+        super(TestDesktopCreate, self).setUp()
+        self.cmd = desktop.CreateDesktop(self.app, None)
+
+    @mock.patch.object(desktop_mgr.DesktopManager, "_create")
+    def test_desktop_create_success(self, mocked_create):
+        args = [
+            "--user-name", "username01",
+            "--user-email", "test@test.com",
+            "--computer-name", "computer01",
+            "--product-id", "workspace.c2.2xlarge.windows",
+            "--image-id", "image-id",
+            "--root-volume", "SATA:120",
+            "--data-volume", "SATA:120",
+            "--data-volume", "SSD:120",
+            "--security-group", "sg01",
+            "--security-group", "sg02",
+            "--nic", "subnet=subnet01,ip=10.1.1.1",
+            "--nic", "subnet=subnet02",
+        ]
+        verify_args = [
+            ("user_name", "username01"),
+            ("user_email", "test@test.com"),
+            ("computer_name", "computer01"),
+            ("product_id", "workspace.c2.2xlarge.windows"),
+            ("image_id", "image-id"),
+            ("root_volume", dict(type="SATA", size=120)),
+            ("data_volumes", [dict(type="SATA", size=120),
+                              dict(type="SSD", size=120)]),
+            ("security_groups", ["sg01", "sg02"]),
+            ("nics", [dict(subnet_id="subnet01", ip_address="10.1.1.1"),
+                      dict(subnet_id="subnet02")]),
+        ]
+        parsed_args = self.check_parser(self.cmd, args, verify_args)
+
+        network_client = self.app.client_manager.network
+        _sg_list = [base_resource.Resource(None, dict(id="sg-id-01")),
+                    base_resource.Resource(None, dict(id="sg-id-02")), ]
+        network_client.find_security_group.side_effect = _sg_list
+        _subnets = [base_resource.Resource(None, dict(id="subnet-id-1")),
+                    base_resource.Resource(None, dict(id="subnet-id-2"))]
+        network_client.find_subnet.side_effect = _subnets
+
+        _job = base_resource.DictWithMeta(dict(job_id="job_id"), 'RID')
+        mocked_create.return_value = _job
+        result = self.cmd.take_action(parsed_args)
+
+        json = {
+            "desktops": [{
+                "user_name": "username01",
+                "user_email": "test@test.com",
+                "product_id": "workspace.c2.2xlarge.windows",
+                "image_id": "image-id",
+                "computer_name": "computer01",
+                "security_groups": [dict(id="sg-id-01"),
+                                    dict(id="sg-id-02"), ],
+                "root_volume": dict(type="SATA", size=120),
+                "data_volumes": [dict(type="SATA", size=120),
+                                 dict(type="SSD", size=120), ],
+                "nics": [dict(subnet_id="subnet-id-1", ip_address="10.1.1.1"),
+                         dict(subnet_id="subnet-id-2"), ]
+            }]
+        }
+
+        mocked_create.assert_called_once_with("/desktops", json=json, raw=True)
+        self.assertEquals("Request Received, job id: %s" % _job["job_id"],
+                          result)
 
 
 class TestDesktopShow(TestDesktop):

@@ -44,36 +44,36 @@ class EditPolicy(command.Command):
     def get_parser(self, prog_name):
         parser = super(EditPolicy, self).get_parser(prog_name)
         # usb related
-        pb.PolicyParser.add_switch_arg(parser, 'usb-port-redirection')
-        pb.PolicyParser.add_switch_arg(parser, 'usb-image')
-        pb.PolicyParser.add_switch_arg(parser, 'usb-video')
-        pb.PolicyParser.add_switch_arg(parser, 'usb-printer')
-        pb.PolicyParser.add_switch_arg(parser, 'usb-storage')
-        pb.PolicyParser.add_switch_arg(parser, 'usb-smart-card')
+        pb.Policy.add_switch_arg(parser, 'usb-port-redirection')
+        pb.Policy.add_switch_arg(parser, 'usb-image')
+        pb.Policy.add_switch_arg(parser, 'usb-video')
+        pb.Policy.add_switch_arg(parser, 'usb-printer')
+        pb.Policy.add_switch_arg(parser, 'usb-storage')
+        pb.Policy.add_switch_arg(parser, 'usb-smart-card')
 
         # printer related
-        pb.PolicyParser.add_switch_arg(parser, 'printer-redirection')
-        pb.PolicyParser.add_switch_arg(parser, 'sync-client-default-printer')
-        pb.PolicyParser.add_printer_driver_arg(parser)
+        pb.Policy.add_switch_arg(parser, 'printer-redirection')
+        pb.Policy.add_switch_arg(parser, 'sync-client-default-printer')
+        pb.Policy.add_printer_driver_arg(parser)
 
         # file redirection related
-        pb.PolicyParser.add_file_redirection_mode_arg(parser)
-        pb.PolicyParser.add_switch_arg(parser, 'fixed-drive')
-        pb.PolicyParser.add_switch_arg(parser, 'removable-drive')
-        pb.PolicyParser.add_switch_arg(parser, 'cd-rom-drive')
-        pb.PolicyParser.add_switch_arg(parser, 'network-drive')
+        pb.Policy.add_file_redirection_mode_arg(parser)
+        pb.Policy.add_switch_arg(parser, 'fixed-drive')
+        pb.Policy.add_switch_arg(parser, 'removable-drive')
+        pb.Policy.add_switch_arg(parser, 'cd-rom-drive')
+        pb.Policy.add_switch_arg(parser, 'network-drive')
 
         # clipboard redirection
-        pb.PolicyParser.add_clipboard_redirection_arg(parser)
+        pb.Policy.add_clipboard_redirection_arg(parser)
 
         # hdp plus
-        pb.PolicyParser.add_switch_arg(parser, 'hdp-plus')
-        pb.PolicyParser.add_display_level_arg(parser)
-        pb.PolicyParser.add_bandwidth_arg(parser)
-        pb.PolicyParser.add_frame_rate_arg(parser)
-        pb.PolicyParser.add_video_frame_rate_arg(parser)
-        pb.PolicyParser.add_smoothing_factor_arg(parser)
-        pb.PolicyParser.add_lossy_compression_quality_arg(parser)
+        pb.Policy.add_switch_arg(parser, 'hdp-plus')
+        pb.Policy.add_display_level_arg(parser)
+        pb.Policy.add_bandwidth_arg(parser)
+        pb.Policy.add_frame_rate_arg(parser)
+        pb.Policy.add_video_frame_rate_arg(parser)
+        pb.Policy.add_smoothing_factor_arg(parser)
+        pb.Policy.add_lossy_compression_quality_arg(parser)
 
         return parser
 

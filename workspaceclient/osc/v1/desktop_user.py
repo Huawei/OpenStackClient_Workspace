@@ -29,9 +29,9 @@ class ListDesktopUser(command.Lister):
 
     def get_parser(self, prog_name):
         parser = super(ListDesktopUser, self).get_parser(prog_name)
-        pb.DesktopUserParser.add_username_option(parser)
-        pb.DesktopUserParser.add_email_option(parser)
-        pb.DesktopUserParser.add_marker_option(parser)
+        pb.DesktopUser.add_username_option(parser)
+        pb.DesktopUser.add_email_option(parser)
+        pb.DesktopUser.add_marker_option(parser)
         bpb.BaseParser.add_limit_option(parser)
         return parser
 
@@ -51,11 +51,11 @@ class ListLoginRecords(command.Lister):
 
     def get_parser(self, prog_name):
         parser = super(ListLoginRecords, self).get_parser(prog_name)
-        pb.DesktopUserParser.add_start_time_option(parser)
-        pb.DesktopUserParser.add_end_time_option(parser)
-        pb.DesktopUserParser.add_user_name_option(parser)
-        pb.DesktopUserParser.add_computer_name_option(parser)
-        pb.DesktopUserParser.add_terminal_type_option(parser)
+        pb.DesktopUser.add_start_time_option(parser)
+        pb.DesktopUser.add_end_time_option(parser)
+        pb.DesktopUser.add_user_name_option(parser)
+        pb.DesktopUser.add_computer_name_option(parser)
+        pb.DesktopUser.add_terminal_type_option(parser)
         bpb.BaseParser.add_offset_option(parser)
         bpb.BaseParser.add_limit_option(parser)
         return parser

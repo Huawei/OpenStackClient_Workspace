@@ -59,11 +59,3 @@ class BaseParser(object):
             type=int,
             help=_("return result offset")
         )
-
-    @staticmethod
-    def add_sortdir_option(parser):
-        parser.add_argument(
-            "--sort-dir",
-            choices=['desc', 'asc'],
-            help=_("Sort by desc or asc")
-        )

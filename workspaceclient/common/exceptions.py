@@ -46,8 +46,8 @@ def from_http_error(exception):
             if isinstance(body, dict):
                 if "error_code" in body:
                     message += '[%s] ' % body["error_code"]
-                if "error_description" in body:
-                    message += body["error_description"]
+                if "error_msg" in body:
+                    message += body["error_msg"]
 
             if message != '':
                 kwargs["message"] = message
