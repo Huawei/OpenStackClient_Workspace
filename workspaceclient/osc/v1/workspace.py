@@ -75,18 +75,49 @@ class ShowWorkspace(command.ShowOne):
 
 
 class EditWorkspace(command.Command):
-    _description = _("show workspace")
+    _description = _("edit workspace")
 
     def get_parser(self, prog_name):
-        parser = super(ShowWorkspace, self).get_parser(prog_name)
+        parser = super(EditWorkspace, self).get_parser(prog_name)
+        parser.add_argument(
+            "--domain-type",
+            choices=["LITE_AD", "LOCAL_AD"],
+            required=True,
+            help=_("LOCAL_AD - your local exists AD; "
+                   "LITE_AD - cloud lite AD"),
+        )
+        parser.add_argument(
+            "--domain-admin-account",
+            metavar="<account>",
+            required=False,
+            help=_("Optional When domain type is LOCAL_AD, "
+                   "domain-admin-account should be an exists "
+                   "admin account of LOCAL AD"),
+        )
+        parser.add_argument(
+            "--old-domain-password",
+            metavar="<password>",
+            required=False,
+            help=_("Current domain password "
+                   "(Required when domain type is LITE_AD)"),
+        )
+        parser.add_argument(
+            "--domain-password",
+            metavar="<password>",
+            required=False,
+            help=_("New domain password"),
+        )
         return parser
 
     def take_action(self, args):
         client = self.app.client_manager.workspace
-        products = client.workspaces.edit()
-        columns = resource.Product.list_column_names
-        outputs = [r.get_display_data(columns) for r in products]
-        return columns, outputs
+        result = client.workspaces.edit(
+            args.domain_type,
+            domain_admin_account=args.domain_admin_account,
+            old_domain_password=args.old_domain_password,
+            domain_password=args.domain_password,
+        )
+        return "done"
 
 
 class DisableWorkspace(command.Command):

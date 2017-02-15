@@ -14,6 +14,7 @@
 #
 
 from workspaceclient.common import manager
+from workspaceclient.common import utils
 from workspaceclient.v1 import resource
 
 
@@ -64,8 +65,17 @@ class WorkspaceManager(manager.Manager):
         }
         return self._create("/workspaces", json=json, raw=True)
 
-    def edit(self):
-        self._update_all("/workspaces")
+    def edit(self, domain_type, domain_admin_account=None,
+             old_domain_password=None, domain_password=None):
+        domains = utils.remove_empty_from_dict({
+            "domain_type": domain_type,
+            "domain_admin_account": domain_admin_account,
+            "old_domain_password": old_domain_password,
+            "domain_password":domain_password,
+        })
+        self._update_all("/workspaces",
+                         json=dict(ad_domains=domains),
+                         raw=True)
 
     def get(self):
         """get workspace detail"""

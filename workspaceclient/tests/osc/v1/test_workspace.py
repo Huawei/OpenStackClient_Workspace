@@ -17,6 +17,7 @@ import mock
 from workspaceclient.common import resource as base_resource
 from workspaceclient.osc.v1 import workspace
 from workspaceclient.tests import base
+from workspaceclient.v1 import resource
 from workspaceclient.v1 import workspace_mgr
 
 
@@ -150,3 +151,170 @@ class TestWorkspaceEnable(base.WorkspaceV1BaseTestCase):
         )
         self.assertEqual("Request Received, job id: %s" % _job["job_id"],
                          result)
+
+
+class TestWorkspaceDisable(base.WorkspaceV1BaseTestCase):
+    def setUp(self):
+        super(TestWorkspaceDisable, self).setUp()
+        self.cmd = workspace.DisableWorkspace(self.app, None)
+
+    @mock.patch.object(workspace_mgr.WorkspaceManager, "_delete")
+    def test_disable_workspace(self, mocked):
+        parsed_args = self.check_parser(self.cmd, [], ())
+        _job = base_resource.DictWithMeta(dict(job_id="job_id"), 'RID')
+        mocked.return_value = _job
+        result = self.cmd.take_action(parsed_args)
+        mocked.assert_called_once_with("/workspaces")
+        self.assertEquals("Request Received, job id: " + _job["job_id"],
+                          result)
+
+
+class TestWorkspaceEdit(base.WorkspaceV1BaseTestCase):
+    def setUp(self):
+        super(TestWorkspaceEdit, self).setUp()
+        self.cmd = workspace.EditWorkspace(self.app, None)
+
+    @mock.patch.object(workspace_mgr.WorkspaceManager, "_update_all")
+    def test_edit_lite_ad_workspace(self, mocked):
+        args = [
+            "--domain-type", "LITE_AD",
+            "--domain-password", "p1",
+            "--old-domain-password", "p2",
+        ]
+        verify_args = (
+            ("domain_type", "LITE_AD"),
+            ("domain_password", "p1"),
+            ("old_domain_password", "p2"),
+        )
+        parsed_args = self.check_parser(self.cmd, args, verify_args)
+        mocked.return_value = base_resource.StrWithMeta('', 'Request-ID')
+        result = self.cmd.take_action(parsed_args)
+
+        json = {
+            "ad_domains": {
+                "domain_type": "LITE_AD",
+                "old_domain_password": "p2",
+                "domain_password": "p1"
+            }
+        }
+        mocked.assert_called_once_with("/workspaces", json=json, raw=True)
+        self.assertEquals("done", result)
+
+    @mock.patch.object(workspace_mgr.WorkspaceManager, "_update_all")
+    def test_edit_local_ad_workspace(self, mocked):
+        args = [
+            "--domain-type", "LITE_AD",
+            "--domain-admin-account", "account",
+            "--domain-password", "p1",
+        ]
+        verify_args = (
+            ("domain_type", "LITE_AD"),
+            ("domain_password", "p1"),
+            ("domain_admin_account", "account"),
+        )
+        parsed_args = self.check_parser(self.cmd, args, verify_args)
+        mocked.return_value = base_resource.StrWithMeta('', 'Request-ID')
+        result = self.cmd.take_action(parsed_args)
+
+        json = {
+            "ad_domains": {
+                "domain_type": "LITE_AD",
+                "domain_admin_account": "account",
+                "domain_password": "p1"
+            }
+        }
+        mocked.assert_called_once_with("/workspaces", json=json, raw=True)
+        self.assertEquals("done", result)
+
+
+class TestWorkspaceShow(base.WorkspaceV1BaseTestCase):
+    def setUp(self):
+        super(TestWorkspaceShow, self).setUp()
+        self.cmd = workspace.ShowWorkspace(self.app, None)
+
+    @mock.patch.object(workspace_mgr.WorkspaceManager, "_get")
+    def test_show_lite_ad_workspace(self, mocked):
+        parsed_args = self.check_parser(self.cmd, [], ())
+        return_data = {
+            "ad_domains": {
+                "domain_type": "LITE_AD",
+                "domain_name": "test.com",
+                "domain_admin_account": "vdsadmin",
+                "active_domain_ip": None,
+                "standby_domain_ip": None,
+                "active_dns_ip": None,
+                "standby_dns_ip": None
+            },
+            "vpc_id": "dbecb512-34d1-4d7d-90f1-6d3feb76263d",
+            "vpc_name": "test",
+            "dedicated_access_address": "https://192.168.0.4",
+            "internet_access_address": "https://10.154.55.185",
+            "status": "SUBSCRIBED",
+            "access_mode": "DEDICATED",
+            "subnet_ids": [
+                {
+                    "subnet_id": "a4bde8e5-b8b7-453c-839b-3c5a3a49772f"
+                }
+            ]
+        }
+        mocked.return_value = resource.Workspace(None, return_data)
+        columns, data = self.cmd.take_action(parsed_args)
+        mocked.assert_called_once_with("/workspaces")
+        self.assertEquals(resource.Workspace.show_column_names, columns)
+        expected = (
+            "active_dns_ip='None', active_domain_ip='None', "
+            "domain_admin_account='vdsadmin', domain_name='test.com', "
+            "domain_type='LITE_AD', standby_dns_ip='None', "
+            "standby_domain_ip='None'",
+            'dbecb512-34d1-4d7d-90f1-6d3feb76263d',
+            'test',
+            'https://192.168.0.4',
+            'https://10.154.55.185',
+            'DEDICATED',
+            "subnet_id='a4bde8e5-b8b7-453c-839b-3c5a3a49772f'"
+        )
+        self.assertEquals(expected, data)
+
+    @mock.patch.object(workspace_mgr.WorkspaceManager, "_get")
+    def test_show_lite_ad_workspace(self, mocked):
+        parsed_args = self.check_parser(self.cmd, [], ())
+        return_data = {
+            "ad_domains": {
+                "domain_type": "LOCAL_AD",
+                "domain_name": "test.com",
+                "domain_admin_account": "vdsadmin",
+                "active_domain_ip": "172.16.0.4",
+                "standby_domain_ip": "172.16.0.5",
+                "active_dns_ip": "172.16.0.4",
+                "standby_dns_ip": "172.16.0.5"
+            },
+            "vpc_id": "dbecb512-34d1-4d7d-90f1-6d3feb76263d",
+            "vpc_name": "test",
+            "dedicated_access_address": "null",
+            "internet_access_address": "https://10.154.55.185",
+            "status": "SUBSCRIBED",
+            "access_mode": "INTERNET",
+            "subnet_ids": [
+                {
+                    "subnet_id": "a4bde8e5-b8b7-453c-839b-3c5a3a49772f"
+                }
+            ]
+        }
+
+        mocked.return_value = resource.Workspace(None, return_data)
+        columns, data = self.cmd.take_action(parsed_args)
+        mocked.assert_called_once_with("/workspaces")
+        self.assertEquals(resource.Workspace.show_column_names, columns)
+        expected = (
+            "active_dns_ip='172.16.0.4', active_domain_ip='172.16.0.4', "
+            "domain_admin_account='vdsadmin', domain_name='test.com', "
+            "domain_type='LOCAL_AD', standby_dns_ip='172.16.0.5', "
+            "standby_domain_ip='172.16.0.5'",
+            'dbecb512-34d1-4d7d-90f1-6d3feb76263d',
+            'test',
+            'null',
+            'https://10.154.55.185',
+            'INTERNET',
+            "subnet_id='a4bde8e5-b8b7-453c-839b-3c5a3a49772f'"
+        )
+        self.assertEquals(expected, data)
