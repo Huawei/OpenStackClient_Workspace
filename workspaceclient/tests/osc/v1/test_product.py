@@ -27,6 +27,7 @@ class TestProductList(base.WorkspaceV1BaseTestCase):
 
     @mock.patch.object(product_mgr.ProductManager, "_list")
     def test_product_list(self, mocked_list):
+        self.check_parser(self.cmd, [], ())
         products = [
             {
                 "product_id": "workspace.c2.large.windows",

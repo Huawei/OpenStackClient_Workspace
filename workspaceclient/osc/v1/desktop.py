@@ -16,6 +16,7 @@ import logging
 
 import six
 from osc_lib.command import command
+
 from workspaceclient.common import parser_builder as p
 from workspaceclient.common.i18n import _
 from workspaceclient.osc.v1 import parser_builder as pb
@@ -124,11 +125,12 @@ class CreateDesktop(command.Command):
         for nic in args.nics:
             subnet = network.find_subnet(nic["subnet_id"])
             nic["subnet_id"] = subnet.id
-        desktops.create(args.computer_name, args.user_name, args.user_email,
-                        args.product_id, args.root_volume,
-                        data_volumes=args.data_volumes, image_id=args.image_id,
-                        security_groups=security_groups, nics=args.nics)
-        return args
+        job = desktops.create(args.computer_name, args.user_name,
+                              args.user_email, args.product_id,
+                              args.root_volume, data_volumes=args.data_volumes,
+                              image_id=args.image_id,
+                              security_groups=security_groups, nics=args.nics)
+        return 'Request Received, job id: ' + job["job_id"]
 
 
 class StartDesktop(command.Command):

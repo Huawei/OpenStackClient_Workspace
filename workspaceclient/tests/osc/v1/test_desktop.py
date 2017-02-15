@@ -172,7 +172,8 @@ class TestDesktopCreate(TestDesktop):
         super(TestDesktopCreate, self).setUp()
         self.cmd = desktop.CreateDesktop(self.app, None)
 
-    def test_args_input(self):
+    @mock.patch.object(desktop_mgr.DesktopManager, "_create")
+    def test_desktop_create_success(self, mocked_create):
         args = [
             "--user-name", "username01",
             "--user-email", "test@test.com",
@@ -201,6 +202,39 @@ class TestDesktopCreate(TestDesktop):
                       dict(subnet_id="subnet02")]),
         ]
         parsed_args = self.check_parser(self.cmd, args, verify_args)
+
+        network_client = self.app.client_manager.network
+        _sg_list = [base_resource.Resource(None, dict(id="sg-id-01")),
+                    base_resource.Resource(None, dict(id="sg-id-02")), ]
+        network_client.find_security_group.side_effect = _sg_list
+        _subnets = [base_resource.Resource(None, dict(id="subnet-id-1")),
+                    base_resource.Resource(None, dict(id="subnet-id-2"))]
+        network_client.find_subnet.side_effect = _subnets
+
+        _job = base_resource.DictWithMeta(dict(job_id="job_id"), 'RID')
+        mocked_create.return_value = _job
+        result = self.cmd.take_action(parsed_args)
+
+        json = {
+            "desktops": [{
+                "user_name": "username01",
+                "user_email": "test@test.com",
+                "product_id": "workspace.c2.2xlarge.windows",
+                "image_id": "image-id",
+                "computer_name": "computer01",
+                "security_groups": [dict(id="sg-id-01"),
+                                    dict(id="sg-id-02"), ],
+                "root_volume": dict(type="SATA", size=120),
+                "data_volumes": [dict(type="SATA", size=120),
+                                 dict(type="SSD", size=120), ],
+                "nics": [dict(subnet_id="subnet-id-1", ip_address="10.1.1.1"),
+                         dict(subnet_id="subnet-id-2"), ]
+            }]
+        }
+
+        mocked_create.assert_called_once_with("/desktops", json=json, raw=True)
+        self.assertEquals("Request Received, job id: %s" % _job["job_id"],
+                          result)
 
 
 class TestDesktopShow(TestDesktop):

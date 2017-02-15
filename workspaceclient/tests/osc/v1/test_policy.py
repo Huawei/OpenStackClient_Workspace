@@ -80,6 +80,7 @@ class TestPolicyShow(TestPolicy):
 
     @mock.patch.object(policy_mgr.PolicyManager, "_get")
     def test_desktop_show_with_computer_name(self, mocked_get):
+        self.check_parser(self.cmd, [], ())
         mocked_get.return_value = self._policy
         columns, data = self.cmd.take_action(None)
 
