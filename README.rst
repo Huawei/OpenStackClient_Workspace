@@ -53,8 +53,7 @@ User help command::
 Provided Commands
 
 *The command line client is self-documenting. Use the --help or -h flag to
-access the usage options. You can find more command line client examples
-`here <./commands.rst>`_*
+access the usage options. You can find more command line client examples* `here <./commands.rst>`_
 
 
 +------------------------+
