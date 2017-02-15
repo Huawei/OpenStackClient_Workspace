@@ -1,9 +1,9 @@
-python-antiddosclient
-=====================
+python-workspaceclient
+======================
 
-This is a `OpenStack Client`_ plugin for HuaWei AntiDDos Management API which
+This is a `OpenStack Client`_ plugin for HuaWei Workspace Management API which
 provides **command-line scripts** (integrated with openstack) and Python library for
-accessing the AntiDDos management API.
+accessing the Workspace management API.
 
 
 Installation
@@ -12,23 +12,21 @@ Currently, We can install the plugin from source code
 
 .. code:: console
 
-  git clone https://github.com/Huawei/OpenStackClient_AntiDDOS python-antiddosclient
-  cd python-antiddosclient
-  python setup.py install
-
+    $ git clone https://github.com/Huawei/OpenStackClient_Workspace
+    python-workspaceclient
+    $ cd python-workspaceclient
+    # use python setup.py develop for test purpose
+    $ python setup.py install
+    $ pip install -r requirements.txt
 
 Command Line Client Usage
 -------------------------
+::
 
-.. note::
+    This plugin is integrated with `OpenStack Client`_ , so the command line
+    client has all features openstack provided.
 
-    The command line client is self-documenting. Use the --help or -h flag to access the usage options.
-    You can find more command line client examples `here <./commands.rst>`_
-
-This plugin is integrated with `OpenStack Client`_ , so the command line client
-follow all the usage **openstack** provided.
-
-.. code:: console
+User help command::
 
     $ openstack --help
     usage: openstack [--version] [-v | -q] [--log-file LOG_FILE] [-h] [--debug]
@@ -51,92 +49,65 @@ follow all the usage **openstack** provided.
                  .......
 
 
-.. code:: console
 
-    $ openstack antiddos --help
-    Command "antiddos" matches:
-      antiddos close
-      antiddos config
-      antiddos daily
-      antiddos logs
-      antiddos open
-      antiddos set
-      antiddos show
-      antiddos status list
-      antiddos status show
-      antiddos task show
-      antiddos weekly
+Provided Commands
+
+*The command line client is self-documenting. Use the --help or -h flag to
+access the usage options. You can find more command line client examples
+`here <./commands.rst>`_*
 
 
-.. code:: console
-
-    $ openstack antiddos status list --help
-    usage: openstack antiddos status list [-h] [-f {csv,json,table,value,yaml}]
-                                          [-c COLUMN] [--max-width <integer>]
-                                          [--print-empty] [--noindent]
-                                          [--quote {all,minimal,none,nonnumeric}]
-                                          [--status {normal,configging,notConfig,pac                                                      ketcleaning,packetdropping}]
-                                          [--ip IP] [--limit LIMIT]
-                                          [--offset OFFSET]
-
-    List AntiDDos status
-
-    optional arguments:
-      -h, --help            show this help message and exit
-      --status {normal,configging,notConfig,packetcleaning,packetdropping}
-                            list AntiDDos with status
-      --ip IP               list EIP matches the ip segment
-      --limit LIMIT         return result limit
-      --offset OFFSET       return result offset
-
-    output formatters:
-      output formatter options
-
-      -f {csv,json,table,value,yaml}, --format {csv,json,table,value,yaml}
-                            the output format, defaults to table
-      -c COLUMN, --column COLUMN
-                            specify the column(s) to include, can be repeated
-
-    table formatter:
-      --max-width <integer>
-                            Maximum display width, <1 to disable. You can also use
-                            the CLIFF_MAX_TERM_WIDTH environment variable, but the
-                            parameter takes precedence.
-      --print-empty         Print empty table if there is no data to show.
-
-    json formatter:
-      --noindent            whether to disable indenting the JSON
-
-    CSV Formatter:
-      --quote {all,minimal,none,nonnumeric}
-                            when to include quotes, defaults to nonnumeric
-
-
-
-.. code:: console
-
-    $ openstack antiddos list --ip=160.44.197
-    +--------------------------------------+---------------------+--------------+-----------+
-    | Floating IP id                       | floating ip address | network type | status    |
-    +--------------------------------------+---------------------+--------------+-----------+
-    | 11427e0f-dc37-4319-a0e2-390e560fe116 | 160.44.197.150      | EIP          | normal    |
-    | 22b0d54b-ca21-402e-b4f6-fc59a347e8bc | 160.44.197.15       | EIP          | notConfig |
-    | a07be473-26b1-4619-b50f-2b208889c992 | 160.44.197.151      | EIP          | notConfig |
-    +--------------------------------------+---------------------+--------------+-----------+
++------------------------+
+| desktop list           |
++------------------------+
+| desktop detail list    |
++------------------------+
+| desktop create         |
++------------------------+
+| desktop delete         |
++------------------------+
+| desktop reboot         |
++------------------------+
+| desktop start          |
++------------------------+
+| desktop stop           |
++------------------------+
+| desktop edit           |
++------------------------+
+| desktop show           |
++------------------------+
+| desktop user list      |
++------------------------+
+| desktop login list     |
++------------------------+
+| workspace enable       |
++------------------------+
+| workspace show         |
++------------------------+
+| workspace edit         |
++------------------------+
+| workspace disable      |
++------------------------+
+| workspace policy show  |
++------------------------+
+| workspace policy edit  |
++------------------------+
+| workspace product list |
++------------------------+
 
 
 Python Library Usage
---------------------
+-------------------------------
 
-The full api is documented in the `AntiDDos Offical Document`_ site
+The full api is documented in the `Workspace Offical Document`_ site
 
-Here's an example of listing antiddos status using Python library with keystone V3 authentication:
+Here's an example of listing metric types using Python library with keystone V3 authentication:
 
 .. code:: python
 
     >>> from keystoneauth1 import session
     >>> from keystoneauth1 import client
-    >>> from workspaceclient.v1 import client
+    >>> from cloudeyeclient.v1 import client
 
     >>> # Use Keystone API v3 for authentication as example
     >>> auth = identity.v3.Password(auth_url=u'http://localhost:5000/v3',
@@ -149,65 +120,13 @@ Here's an example of listing antiddos status using Python library with keystone 
     >>> # Next create a Keystone session using the auth plugin we just created
     >>> session = session.Session(auth=auth)
 
-    >>> # Now we use the session to create a AntiDDos client
-    >>> antiddos_client = client.Client(session=session)
+    >>> # Now we use the session to create a CloudEye client
+    >>> client = client.Client(session=session)
 
-    >>> # Then we can access all antiddos API
-    >>> # Let's try list antiddos status API
-    >>> antiddos_client.antiddos.list()
-    [<AntiDDos floating_ip_address=160.44.1 ....>, ....]
-
-
-
-
-    >>> from keystoneauth1 import session
-    >>> from keystoneauth1 import client
-    >>> from workspaceclient.v1 import client
-
-    >>> # Use Keystone API v3 for authentication as example
-    >>> auth = identity.v3.Password(auth_url=u'http://localhost:5000/v3',
-    ...                             username=u'admin_user',
-    ...                             user_domain_name=u'Default',
-    ...                             password=u'password',
-    ...                             project_name=u'demo',
-    ...                             project_domain_name=u'Default')
-
-    >>> # Next create a Keystone session using the auth plugin we just created
-    >>> session = session.Session(auth=auth)
-
-    >>> # Now we use the session to create a AntiDDos client
-    >>> antiddos_client = client.Client(session=session)
-
-    >>> # Then we can access all antiddos API
-    >>> # Let's try list antiddos status API
-    >>> antiddos_client.antiddos.list()
-    [<AntiDDos floating_ip_address=160.44.1 ....>, ....]
-
-
-
-
-    >>> from keystoneauth1 import session
-    >>> from keystoneauth1 import client
-    >>> from antiddosclient.v1 import client
-
-    >>> # Use Keystone API v3 for authentication as example
-    >>> auth = identity.v3.Password(auth_url=u'http://localhost:5000/v3',
-    ...                             username=u'admin_user',
-    ...                             user_domain_name=u'Default',
-    ...                             password=u'password',
-    ...                             project_name=u'demo',
-    ...                             project_domain_name=u'Default')
-
-    >>> # Next create a Keystone session using the auth plugin we just created
-    >>> session = session.Session(auth=auth)
-
-    >>> # Now we use the session to create a AntiDDos client
-    >>> antiddos_client = client.Client(session=session)
-
-    >>> # Then we can access all antiddos API
-    >>> # Let's try list antiddos status API
-    >>> antiddos_client.antiddos.list()
-    [<AntiDDos floating_ip_address=160.44.1 ....>, ....]
+    >>> # Then we can access all Workspace API
+    >>> # Let's try get workspace API
+    >>> client.workspaces.get()
+    <Metric domain_type=LITE_AD ....>
 
 
 .. note::
@@ -219,9 +138,9 @@ Here's an example of listing antiddos status using Python library with keystone 
 
 * License: Apache License, Version 2.0
 * `OpenStack Client`_
-* `AntiDDos Offical Document`_
+* `Workspace Offical Document`_
 * `KeyStone`_
 
 .. _OpenStack Client: https://github.com/openstack/python-openstackclient
-.. _AntiDDos Offical Document: http://support.hwclouds.com/antiddos_dld/index.html
+.. _Workspace Offical Document: http://support.hwclouds.com/workspace/index.html
 .. _KeyStone: http://docs.openstack.org/developer/keystoneauth/

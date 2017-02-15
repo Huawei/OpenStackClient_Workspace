@@ -23,7 +23,7 @@ LOG = logging.getLogger(__name__)
 
 
 class EnableWorkspace(command.Command):
-    _description = _("create workspace")
+    _description = _("enable workspace")
 
     def get_parser(self, prog_name):
         parser = super(EnableWorkspace, self).get_parser(prog_name)

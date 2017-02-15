@@ -1,3 +1,41 @@
+Workspace Commands
+==================
+
+1. workspace enable(开通云桌面服务)::
+
+    $ openstack workspace enable --domain-type=LITE_AD --domain-name=woo.com
+    --domain-admin-account=woo --domain-password=Test!@#43Edc --vpc=vpc-name
+    --subnet=subnet-id-1 --subnet=subnet-name-2 --access-mode=BOTH
+    Request Received, job id: xxxxxxxxxxxxxxxx
+
+#. workspace show(查询云桌面服务详情)::
+
+    $ openstack workspace show
+    +--------------------------+---------------------------------------------------------------------------------------------------------+
+    | Field                    | Value                                                                                                   |
+    +--------------------------+---------------------------------------------------------------------------------------------------------+
+    | AD Domains               | active_dns_ip='None', active_domain_ip='None', domain_admin_account='vdsadmin', domain_name='B2B.com',  |
+    |                          | domain_type='LITE_AD', standby_dns_ip='None', standby_domain_ip='None'                                  |
+    | VPC ID                   | 62615060-5a38-42d4-a391-9b8a109da548                                                                    |
+    | VPC Name                 | vpc-d29f                                                                                                |
+    | Dedicated access address | https://192.168.0.5                                                                                     |
+    | Internet access address  | https://160.44.198.197                                                                                  |
+    | access_mode              | INTERNET                                                                                                |
+    | Subnets                  | subnet_id='7ca33fe9-2e74-4e7a-8ce6-20d111efc070'                                                        |
+    +--------------------------+---------------------------------------------------------------------------------------------------------+
+
+#. workspace disable(注销云桌面服务)::
+
+    $ openstack workspace disable
+    Request Received, job id: xxxxxxxxxxxxxxxx
+
+# workspace edit(修改云桌面服务属性)::
+
+    $ openstack workspace edit --domain-type=LITE_AD
+    --domain-admin-account=woo --old-domain-password=xxx --domain-password=xxx
+    done
+
+
 Desktop Commands
 ================
 
@@ -74,6 +112,7 @@ Desktop Commands
 
     $ openstack desktop edit --computer-name=woo2
     done
+
 
 Product Commands
 ================
