@@ -15,6 +15,7 @@
 import logging
 
 from osc_lib import utils as formatter
+
 from workspaceclient.common import display
 from workspaceclient.common import resource
 
@@ -81,7 +82,7 @@ class Workspace(resource.Resource, display.Display):
     ]
 
     column_2_property = {
-        "Subnets" : "subnet_ids"
+        "Subnets": "subnet_ids"
     }
 
     formatter = {

@@ -20,7 +20,6 @@ from workspaceclient.v1 import resource
 
 class WorkspaceManager(manager.Manager):
     """Workspace workspace API management"""
-
     resource_class = resource.Workspace
 
     def enable(self, domain_type, domain_name, domain_admin_account,
@@ -71,7 +70,7 @@ class WorkspaceManager(manager.Manager):
             "domain_type": domain_type,
             "domain_admin_account": domain_admin_account,
             "old_domain_password": old_domain_password,
-            "domain_password":domain_password,
+            "domain_password": domain_password,
         })
         self._update_all("/workspaces",
                          json=dict(ad_domains=domains),

@@ -169,6 +169,6 @@ class TestLoginRecordList(base.WorkspaceV1BaseTestCase):
             ("a0504@abc.com", "a05@abc.com", "TEST01D02", "Windows 10 ",
              "2016-12-09T07:28:07.000Z", "2016-12-09T08:29:37.000Z",),
             ("a0505@abc.com", "a05@abc.com", "TEST01D02", "Windows 10 ",
-              "2016-12-09T06:56:21.000Z", None,),
+             "2016-12-09T06:56:21.000Z", None,),
         ]
         self.assertEquals(expected, data)
