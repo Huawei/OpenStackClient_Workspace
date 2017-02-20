@@ -127,7 +127,7 @@ class CreateDesktop(command.Command):
         for nic in args.nics:
             subnet_id = nic["subnet_id"]
             subnet = network.find_subnet(subnet_id, ignore_missing=False)
-            nic["subnet_id"] = subnet.id
+            nic["subnet_id"] = subnet.network_id
         job = desktops.create(args.computer_name, args.user_name,
                               args.user_email, args.product_id,
                               args.root_volume, data_volumes=args.data_volumes,
