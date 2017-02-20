@@ -120,10 +120,13 @@ class CreateDesktop(command.Command):
     def take_action(self, args):
         desktops = self.app.client_manager.workspace.desktops
         network = self.app.client_manager.network
-        security_groups = [dict(id=network.find_security_group(sg).id)
-                           for sg in args.security_groups]
+        security_groups = [
+            dict(id=network.find_security_group(sg, ignore_missing=False).id)
+            for sg in args.security_groups
+            ]
         for nic in args.nics:
-            subnet = network.find_subnet(nic["subnet_id"])
+            subnet_id = nic["subnet_id"]
+            subnet = network.find_subnet(subnet_id, ignore_missing=False)
             nic["subnet_id"] = subnet.id
         job = desktops.create(args.computer_name, args.user_name,
                               args.user_email, args.product_id,
