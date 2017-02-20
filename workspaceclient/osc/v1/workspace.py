@@ -15,6 +15,7 @@
 import logging
 
 from osc_lib.command import command
+
 from workspaceclient.common.i18n import _
 from workspaceclient.osc.v1 import parser_builder as pb
 from workspaceclient.v1 import resource
@@ -43,9 +44,11 @@ class EnableWorkspace(command.Command):
     def take_action(self, args):
         client = self.app.client_manager.workspace
         network = self.app.client_manager.network
-        vpc_id = network.find_router(args.vpc).id
-        subnet_ids = [network.find_subnet(subnet).network_id
-                      for subnet in args.subnets]
+        vpc_id = network.find_router(args.vpc, ignore_missing=False).id
+        subnet_ids = [
+            network.find_subnet(subnet, ignore_missing=False).network_id
+            for subnet in args.subnets
+        ]
         job = client.workspaces.enable(
             args.domain_type, args.domain_name, args.domain_admin_account,
             args.domain_password, vpc_id, subnet_ids, args.access_mode,
