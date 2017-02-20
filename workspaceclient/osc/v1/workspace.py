@@ -43,9 +43,8 @@ class EnableWorkspace(command.Command):
     def take_action(self, args):
         client = self.app.client_manager.workspace
         network = self.app.client_manager.network
-
-        vpc_id = network.find_network(args.vpc).id
-        subnet_ids = [network.find_subnet(subnet).id
+        vpc_id = network.find_router(args.vpc).id
+        subnet_ids = [network.find_subnet(subnet).network_id
                       for subnet in args.subnets]
         job = client.workspaces.enable(
             args.domain_type, args.domain_name, args.domain_admin_account,

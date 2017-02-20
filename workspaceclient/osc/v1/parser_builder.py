@@ -147,8 +147,8 @@ class Desktop(object):
         parser.add_argument(
             "--security-group",
             metavar="<security-group>",
-            required=False,
             default=[],
+            required=False,
             dest="security_groups",
             action='append',
             help=_('Security group to assign to this desktop (name or ID) '
@@ -273,7 +273,7 @@ class Workspace(object):
             default=[],
             action='append',
             dest="subnets",
-            help=_("subnet to assign to workspace (UUID or Name). "
+            help=_("Subnets to assign to workspace (UUID or Name). "
                    "(Repeat option to set multiple subnet)"),
         )
 

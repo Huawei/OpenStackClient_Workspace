@@ -51,9 +51,11 @@ class TestWorkspaceEnable(base.WorkspaceV1BaseTestCase):
 
         # mock return values
         _network = base_resource.Resource(None, dict(id="network-id"))
-        self.app.client_manager.network.find_network.return_value = _network
-        _subnets = [base_resource.Resource(None, dict(id="subnet-id-1")),
-                    base_resource.Resource(None, dict(id="subnet-id-2"))]
+        self.app.client_manager.network.find_router.return_value = _network
+        _subnets = [
+            base_resource.Resource(None, dict(network_id="subnet-id-1")),
+            base_resource.Resource(None, dict(network_id="subnet-id-2")),
+        ]
         self.app.client_manager.network.find_subnet.side_effect = _subnets
         _job = base_resource.DictWithMeta(dict(job_id="job_id"), 'RID')
         mocked_create.return_value = _job
@@ -115,10 +117,13 @@ class TestWorkspaceEnable(base.WorkspaceV1BaseTestCase):
         parsed_args = self.check_parser(self.cmd, args, verify_args)
 
         # mock return values
+        # mock return values
         _network = base_resource.Resource(None, dict(id="network-id"))
-        self.app.client_manager.network.find_network.return_value = _network
-        _subnets = [base_resource.Resource(None, dict(id="subnet-id-1")),
-                    base_resource.Resource(None, dict(id="subnet-id-2"))]
+        self.app.client_manager.network.find_router.return_value = _network
+        _subnets = [
+            base_resource.Resource(None, dict(network_id="subnet-id-1")),
+            base_resource.Resource(None, dict(network_id="subnet-id-2")),
+        ]
         self.app.client_manager.network.find_subnet.side_effect = _subnets
         _job = base_resource.DictWithMeta(dict(job_id="job_id"), 'RID')
         mocked_create.return_value = _job
