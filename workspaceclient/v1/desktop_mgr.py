@@ -35,6 +35,10 @@ class DesktopManager(manager.Manager):
             pass
 
         results = self.list_detail(computer_name=keyword)
+        # try to locate desktops
+        # which's computer_name exactly matches keyword
+        results = [result for result in results
+                   if result.computer_name == keyword]
         matched_number = len(results)
         if matched_number > 1:
             raise execs.NotUniqueMatch

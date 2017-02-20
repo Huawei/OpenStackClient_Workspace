@@ -276,7 +276,8 @@ class TestWorkspaceShow(base.WorkspaceV1BaseTestCase):
             'https://192.168.0.4',
             'https://10.154.55.185',
             'DEDICATED',
-            "subnet_id='a4bde8e5-b8b7-453c-839b-3c5a3a49772f'"
+            "subnet_id='a4bde8e5-b8b7-453c-839b-3c5a3a49772f'",
+            'SUBSCRIBED',
         )
         self.assertEquals(expected, data)
 
@@ -320,6 +321,7 @@ class TestWorkspaceShow(base.WorkspaceV1BaseTestCase):
             'null',
             'https://10.154.55.185',
             'INTERNET',
-            "subnet_id='a4bde8e5-b8b7-453c-839b-3c5a3a49772f'"
+            "subnet_id='a4bde8e5-b8b7-453c-839b-3c5a3a49772f'",
+            'SUBSCRIBED',
         )
         self.assertEquals(expected, data)

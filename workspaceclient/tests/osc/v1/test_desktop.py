@@ -30,7 +30,7 @@ class TestDesktop(base.WorkspaceV1BaseTestCase):
 
     instances = [{
         "desktop_id": "f77db5cd-c020-47d4-bbbe-9b979a38d18c",
-        "computer_name": "cm01",
+        "computer_name": "chen010",
         "status": "ACTIVE",
         "created": "2016-11-14T14:41:25.000Z",
         "login_status": "REGISTERED",
@@ -207,8 +207,10 @@ class TestDesktopCreate(TestDesktop):
         _sg_list = [base_resource.Resource(None, dict(id="sg-id-01")),
                     base_resource.Resource(None, dict(id="sg-id-02")), ]
         network_client.find_security_group.side_effect = _sg_list
-        _subnets = [base_resource.Resource(None, dict(id="subnet-id-1")),
-                    base_resource.Resource(None, dict(id="subnet-id-2"))]
+        _subnets = [
+            base_resource.Resource(None, dict(network_id="subnet-id-1")),
+            base_resource.Resource(None, dict(network_id="subnet-id-2")),
+        ]
         network_client.find_subnet.side_effect = _subnets
 
         _job = base_resource.DictWithMeta(dict(job_id="job_id"), 'RID')
@@ -272,7 +274,10 @@ class TestDesktopShow(TestDesktop):
         desktops = self.app.client_manager.workspace.desktops
         mocked_get.side_effect = exceptions.ClientException(0)
         mock_list.return_value = self.get_fake_desktop_list(count=2)
-        self.assertRaises(execs.NotUniqueMatch, desktops.find, "chen01")
+        # self.assertRaises(execs.NotUniqueMatch, desktops.find, "chen01")
+        result = desktops.find("chen010")
+        expected = self.get_fake_desktop(instance=self.instances[0])
+        self.assertEquals(expected, result)
 
     @mock.patch.object(desktop_mgr.DesktopManager, "_list")
     @mock.patch.object(desktop_mgr.DesktopManager, "_get")
@@ -321,7 +326,7 @@ class TestDesktopShow(TestDesktop):
         ])
 
         expect_data = (
-            'f77db5cd-c020-47d4-bbbe-9b979a38d18c', 'cm01', 'cm',
+            'f77db5cd-c020-47d4-bbbe-9b979a38d18c', 'chen010', 'cm',
             'workspace.c2.large.windows', sg_list, 'computev2-2',
             ("charging_mode='0', image_name='workspace-user-template-test', "
              "metering.cloudServiceType='sys.service.type.ec2', "
