@@ -79,6 +79,7 @@ class Workspace(resource.Resource, display.Display):
         "Internet access address",
         "access_mode",
         "Subnets",
+        "Status",
     ]
 
     column_2_property = {
