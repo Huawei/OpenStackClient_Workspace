@@ -32,14 +32,12 @@ class Desktop(object):
             '--hard',
             action="store_true",
             dest='force',
-            default=False,
             help=_("hard reboot")
         )
         force_reboot.add_argument(
             '--soft',
             action="store_false",
             dest='force',
-            default=False,
             help=_("soft reboot")
         )
 

@@ -17,7 +17,6 @@ import random
 import mock
 from keystoneclient import exceptions
 
-from workspaceclient.common import exceptions as execs
 from workspaceclient.common import resource as base_resource
 from workspaceclient.osc.v1 import desktop
 from workspaceclient.tests import base
@@ -528,6 +527,14 @@ class TestDesktopReboot(TestDesktop):
                 }
             )
             self.assertEquals("done", result)
+
+    def test_reboot_options(self):
+        args = ["desktop-id-1", "--s"]
+        verify_args = [
+            ("desktop_id", "desktop-id-1"),
+            ("force", False),
+        ]
+        self.check_parser(self.cmd, args, verify_args)
 
 
 class TestDesktopStart(TestDesktop):
