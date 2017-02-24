@@ -109,6 +109,8 @@ access the usage options. You can find more command line client examples* `here 
 +------------------------+
 | workspace product list |
 +------------------------+
+| workspace job show     |
++------------------------+
 
 
 Python Library Usage

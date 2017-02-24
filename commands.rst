@@ -183,3 +183,25 @@ Desktop User Commands
 
     $ openstack desktop login list
     暂时无测试数据
+
+
+Job Commands
+============
+
+1. job show(显示异步任务详情)::
+
+    $ openstack workspace job show xxxxx
+    +-------------+------------------------------------------------------------------------------------------------------------------+
+    | Field       | Value                                                                                                            |
+    +-------------+------------------------------------------------------------------------------------------------------------------+
+    | Job ID      | ff80808259b37662015a36755f55105d                                                                                 |
+    | Job Type    | createDesktops                                                                                                   |
+    | Begin Time  | 2017-02-13T07:52:26.000Z                                                                                         |
+    | End Time    | 2017-02-13T08:12:22.000Z                                                                                         |
+    | Status      | SUCCESS                                                                                                          |
+    | Error Code  | None                                                                                                             |
+    | Fail Reason | None                                                                                                             |
+    | Sub Jobs    | begin_time='2017-02-13T07:52:26.000Z', end_time='2017-02-13T08:12:21.000Z', entities='{u'desktop_id':            |
+    |             | u'fb15795b-e890-4035-ab04-9cdd201fc2ad'}', error_code='None', fail_reason='None',                                |
+    |             | job_id='ff80808259b37662015a36755f5e105f', job_type='createDesktops', message='None', status='SUCCESS'           |
+    +-------------+------------------------------------------------------------------------------------------------------------------+
