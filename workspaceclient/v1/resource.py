@@ -278,3 +278,22 @@ class DesktopLoginRecords(resource.Resource, display.Display):
         "Connection start time",
         "Connection end time",
     ]
+
+
+class Job(resource.Resource, display.Display):
+    """workspace job resource instance"""
+
+    show_column_names = [
+        "Job ID",
+        "Job Type",
+        "Begin Time",
+        "End Time",
+        "Status",
+        "Error Code",
+        "Fail Reason",
+        "Sub Jobs",
+    ]
+
+    formatter = {
+        "Sub Jobs": formatter.format_list_of_dicts,
+    }

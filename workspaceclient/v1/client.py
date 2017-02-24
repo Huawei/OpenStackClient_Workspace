@@ -17,6 +17,7 @@ import logging
 from workspaceclient.common import httpclient
 from workspaceclient.v1 import desktop_mgr
 from workspaceclient.v1 import desktop_user_mgr
+from workspaceclient.v1 import job_mgr
 from workspaceclient.v1 import policy_mgr
 from workspaceclient.v1 import product_mgr
 from workspaceclient.v1 import workspace_mgr
@@ -63,3 +64,4 @@ class Client(object):
         self.policies = policy_mgr.PolicyManager(self.client)
         self.products = product_mgr.ProductManager(self.client)
         self.desktop_users = desktop_user_mgr.DesktopUserManager(self.client)
+        self.jobs = job_mgr.JobManager(self.client)

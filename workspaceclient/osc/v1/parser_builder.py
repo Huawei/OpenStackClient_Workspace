@@ -17,6 +17,7 @@ from workspaceclient.common.i18n import _
 
 
 class Desktop(object):
+
     @staticmethod
     def add_desktop_id_arg(parser, op):
         parser.add_argument(
